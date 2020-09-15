@@ -48,18 +48,16 @@ const setup = (rows, cols) => {
 	}
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export function astarAlgorithm(rows, cols, startX, startY, endX, endY) {
+export default function astarAlgorithm(rows, cols, startX, startY, endX, endY) {
 	let startTime = Date.now();
-	let openSet = [];
-	const closedSet = [];
-	let start;
-	let end;
-	const path = [];
 	let endTime;
 	let time;
+	let start;
+	let end;
+	let openSet = [];
+	const closedSet = [];
+	const path = [];
 
-	startTime = Date.now();
 	setup(rows, cols);
 
 	start = grid[startX][startY];

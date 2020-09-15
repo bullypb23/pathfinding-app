@@ -13,3 +13,9 @@ export const addResult = algorithmData => (
 		algorithmData,
 	}
 );
+
+export const nextLevelHandler = () => (
+	{
+		type: actionTypes.NEXT_LEVEL_HANDLER,
+	}
+);

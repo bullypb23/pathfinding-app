@@ -11,3 +11,4 @@ export const CHANGE_END_Y = 'CHANGE_END_Y';
 
 export const TOGGLE_ALGORITHM = 'TOGGLE_ALGORITHM';
 export const ADD_RESULT = 'ADD_RESULT';
+export const NEXT_LEVEL_HANDLER = 'NEXT_LEVEL_HANDLER';

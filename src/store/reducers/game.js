@@ -21,6 +21,7 @@ const reducer = (state = initialState, action) => {
 			levels: {
 				...state.levels,
 				[state.level]: {
+					...state.levels[state.level],
 					[action.algorithmData.name]: {
 						path: action.algorithmData.path,
 						visitedNodes: action.algorithmData.visitedNodes,
@@ -28,6 +29,11 @@ const reducer = (state = initialState, action) => {
 					},
 				},
 			},
+		};
+	case actionTypes.NEXT_LEVEL_HANDLER:
+		return {
+			...state,
+			level: state.level + 1,
 		};
 	default: return state;
 	}

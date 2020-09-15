@@ -6,7 +6,9 @@ import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import Node from './Node';
 import * as actions from '../store/actions/game';
-import { astarAlgorithm } from '../algorithms/astar';
+import astarAlgorithm from '../algorithms/astar';
+import bfsAlgorithm from '../algorithms/bfs';
+import dijkstraAlgorithm from '../algorithms/dijkstra';
 
 const Wrapper = styled.div`
 	width: 100%;
@@ -76,6 +78,7 @@ const Button = styled.button`
 	color: white;
   background-color: #1ABC9C;
   padding: 10px 20px;
+	margin: 10px;
   border: none;
 	outline: none;
   border-radius: 10px;
@@ -83,12 +86,16 @@ const Button = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #26BFA1;
+    background-color: #28E1BD;
   }
+
+	&:disabled {
+		background-color: #AAAAAA;
+	}
 `;
 
 const Game = ({
-	grid, rows, cols, startX, startY, endX, endY, toggleAlgorithm, astar, bfs, dijkstra, addResult,
+	grid, rows, cols, startX, startY, endX, endY, toggleAlgorithm, astar, bfs, dijkstra, addResult, level, nextLevelHandler, levels,
 }) => {
 	const [error, setError] = useState(false);
 
@@ -107,21 +114,44 @@ const Game = ({
 				});
 			}
 		}
-		// if (bfs) {
-		// 	runBfsAlgorithm();
-		// }
-		// if (dijkstra) {
-		// 	runDijkstraAlgorithm();
-		// }
+
+		if (bfs) {
+			const [success, path, visitedNodes, time] = bfsAlgorithm(rows, cols, startX, startY, endX, endY);
+			if (success) {
+				addResult({
+					name: 'bfs', path, visitedNodes, time,
+				});
+			}
+		}
+
+		if (dijkstra) {
+			const [success, path, visitedNodes, time] = dijkstraAlgorithm(rows, cols, startX, startY, endX, endY);
+			if (success) {
+				addResult({
+					name: 'dijkstra', path, visitedNodes, time,
+				});
+			}
+		}
 	};
+
 	if (grid.length === 0) {
 		return <Redirect to="/" />;
+	}
+
+	let disabled = false;
+	if (levels[level]) {
+		disabled = true;
 	}
 
 	return (
 		<Wrapper>
 			<Container>
 				<Heading>Select algorithms you want to use</Heading>
+				<Heading>
+					Level:
+					{' '}
+					{level}
+				</Heading>
 				<Section>
 					<AlgorithmsContainer>
 						<Checkbox type="checkbox" value="astar" id="astar" onChange={e => toggleAlgorithm(e.target.value)} />
@@ -154,7 +184,8 @@ const Game = ({
 				))}
 			</MapContainer>
 			<ButtonContainer>
-				<Button onClick={runAlgotithms}>Play</Button>
+				<Button onClick={runAlgotithms} disabled={disabled}>Play</Button>
+				<Button onClick={nextLevelHandler}>Next Level</Button>
 			</ButtonContainer>
 		</Wrapper>
 	);
@@ -169,11 +200,15 @@ Game.propTypes = {
 	startY: propTypes.number.isRequired,
 	endX: propTypes.number.isRequired,
 	endY: propTypes.number.isRequired,
+	level: propTypes.number.isRequired,
 	toggleAlgorithm: propTypes.func.isRequired,
 	astar: propTypes.bool.isRequired,
 	bfs: propTypes.bool.isRequired,
 	dijkstra: propTypes.bool.isRequired,
 	addResult: propTypes.func.isRequired,
+	nextLevelHandler: propTypes.func.isRequired,
+	// eslint-disable-next-line react/forbid-prop-types
+	levels: propTypes.object.isRequired,
 };
 
 const mapStateToProps = state => (
@@ -188,6 +223,8 @@ const mapStateToProps = state => (
 		astar: state.game.astar,
 		bfs: state.game.bfs,
 		dijkstra: state.game.dijkstra,
+		level: state.game.level,
+		levels: state.game.levels,
 	}
 );
 
@@ -195,6 +232,7 @@ const mapDispatchToProps = dispatch => (
 	{
 		toggleAlgorithm: algorithm => dispatch(actions.toggleAlgorithm(algorithm)),
 		addResult: algorithmData => dispatch(actions.addResult(algorithmData)),
+		nextLevelHandler: () => dispatch(actions.nextLevelHandler()),
 	}
 );
 
