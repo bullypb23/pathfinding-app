@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import propTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import * as actions from '../store/actions/gameConfig';
@@ -91,121 +92,168 @@ const ErrorParagraph = styled(Paragraph)`
   color: red;
 `;
 
-const HomePage = props => {
-  useEffect(() => {
-    if (props.gridSize.cols === 0) {
-      props.changeColumnSize(10);
-    }
+const HomePage = ({
+	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY,
+}) => {
+	useEffect(() => {
+		if (cols === 0) {
+			changeColumnSize(10);
+		}
 
-    if (props.gridSize.rows === 0) {
-      props.changeRowSize(10);
-    }
+		if (rows === 0) {
+			changeRowSize(10);
+		}
 
-    if (props.start.x < 0) {
-      props.changeStartX(props.gridSize.cols);
-    } else if (props.start.x > props.gridSize.cols - 1) {
-      props.changeStartX(-props.gridSize.cols);
-    }
+		if (startX < 0) {
+			changeStartX(cols);
+		} else if (startX > cols - 1) {
+			changeStartX(-cols);
+		}
 
-    if (props.start.y < 0) {
-      props.changeStartY(props.gridSize.rows);
-    } else if (props.start.y > props.gridSize.rows - 1) {
-      props.changeStartY(-props.gridSize.rows);
-    }
+		if (startY < 0) {
+			changeStartY(rows);
+		} else if (startY > rows - 1) {
+			changeStartY(-rows);
+		}
 
-    if (props.end.x < 0) {
-      props.changeEndX(props.gridSize.cols);
-    } else if (props.end.x > props.gridSize.cols - 1) {
-      props.changeEndX(-props.gridSize.cols);
-    }
+		if (endX < 0) {
+			changeEndX(cols);
+		} else if (endX > cols - 1) {
+			changeEndX(-cols);
+		}
 
-    if (props.end.y < 0) {
-      props.changeEndY(props.gridSize.rows);
-    } else if (props.end.y > props.gridSize.rows - 1) {
-      props.changeEndY(-props.gridSize.rows);
-    }
-  }, [props]);
+		if (endY < 0) {
+			changeEndY(rows);
+		} else if (endY > rows - 1) {
+			changeEndY(-rows);
+		}
+	}, [cols, endX, endY, rows, startX, startY]);
 
-  const goToGamePage = () => {
-    props.history.push('/game');
-  }
+	const goToGamePage = () => {
+		// eslint-disable-next-line react/prop-types
+		history.push('/game');
+	};
 
-  return (
-    <Wrapper>
-      <Heading>Pathfinding application</Heading>
-      <Paragraph>Available algorithms are: Dijkstra, A* Search and Breadth-first Search.</Paragraph>
-      <InformationDiv>
-        <Container>
-          <Paragraph>Grid size is: {props.gridSize.cols} columns and {props.gridSize.rows} rows</Paragraph>
-          <SizeContainer>
-            <Paragraph>Columns: </Paragraph>
-            <SizeButton onClick={() => props.changeColumnSize(-1)}>-</SizeButton>
-            <Size>{props.gridSize.cols}</Size>
-            <SizeButtonRight onClick={() => props.changeColumnSize(1)}>+</SizeButtonRight>
-          </SizeContainer>
-          <SizeContainer>
-            <Paragraph>Rows: </Paragraph>
-            <SizeButton onClick={() => props.changeRowSize(-1)}>-</SizeButton>
-            <Size>{props.gridSize.rows}</Size>
-            <SizeButtonRight onClick={() => props.changeRowSize(1)}>+</SizeButtonRight>
-          </SizeContainer>
-        </Container>
-        <Container>
-          <Paragraph>Start coordinates are x = {props.start.x} and y = {props.start.y}</Paragraph>
-          <SizeContainer>
-            <Paragraph>Start X: </Paragraph>
-            <SizeButton onClick={() => props.changeStartX(-1)}>-</SizeButton>
-            <Size>{props.start.x}</Size>
-            <SizeButtonRight onClick={() => props.changeStartX(1)}>+</SizeButtonRight>
-          </SizeContainer>
-          <SizeContainer>
-            <Paragraph>Start Y: </Paragraph>
-            <SizeButton onClick={() => props.changeStartY(-1)}>-</SizeButton>
-            <Size>{props.start.y}</Size>
-            <SizeButtonRight onClick={() => props.changeStartY(1)}>+</SizeButtonRight>
-          </SizeContainer>
-        </Container>
-        <Container>
-          <Paragraph>End coordinates are x = {props.end.x} and y = {props.end.y}</Paragraph>
-          <SizeContainer>
-            <Paragraph>End X: </Paragraph>
-            <SizeButton onClick={() => props.changeEndX(-1)}>-</SizeButton>
-            <Size>{props.end.x}</Size>
-            <SizeButtonRight onClick={() => props.changeEndX(1)}>+</SizeButtonRight>
-          </SizeContainer>
-          <SizeContainer>
-            <Paragraph>End Y: </Paragraph>
-            <SizeButton onClick={() => props.changeEndY(-1)}>-</SizeButton>
-            <Size>{props.end.y}</Size>
-            <SizeButtonRight onClick={() => props.changeEndY(1)}>+</SizeButtonRight>
-          </SizeContainer>
-        </Container>
-      </InformationDiv>
-      <LinkContainer>
-        <StyledButton onClick={goToGamePage}>Play/Run</StyledButton>
-      </LinkContainer>
-      {props.start.x === props.end.x && props.start.y === props.end.y ? <ErrorParagraph>Start and end are equal, please change one!</ErrorParagraph> : null}
-    </Wrapper>
-  )
-}
+	return (
+		<Wrapper>
+			<Heading>Pathfinding application</Heading>
+			<Paragraph>Available algorithms are: A* Search, Breadth-first Search and Dijkstra.</Paragraph>
+			<InformationDiv>
+				<Container>
+					<Paragraph>
+						Grid size is:
+						{' '}
+						{cols}
+						{' '}
+						columns and
+						{' '}
+						{rows}
+						{' '}
+						rows
+					</Paragraph>
+					<SizeContainer>
+						<Paragraph>Columns: </Paragraph>
+						<SizeButton onClick={() => changeColumnSize(-1)}>-</SizeButton>
+						<Size>{cols}</Size>
+						<SizeButtonRight onClick={() => changeColumnSize(1)}>+</SizeButtonRight>
+					</SizeContainer>
+					<SizeContainer>
+						<Paragraph>Rows: </Paragraph>
+						<SizeButton onClick={() => changeRowSize(-1)}>-</SizeButton>
+						<Size>{rows}</Size>
+						<SizeButtonRight onClick={() => changeRowSize(1)}>+</SizeButtonRight>
+					</SizeContainer>
+				</Container>
+				<Container>
+					<Paragraph>
+						Start coordinates are x =
+						{' '}
+						{startX}
+						{' '}
+						and y =
+						{' '}
+						{startY}
+					</Paragraph>
+					<SizeContainer>
+						<Paragraph>Start X: </Paragraph>
+						<SizeButton onClick={() => changeStartX(-1)}>-</SizeButton>
+						<Size>{startX}</Size>
+						<SizeButtonRight onClick={() => changeStartX(1)}>+</SizeButtonRight>
+					</SizeContainer>
+					<SizeContainer>
+						<Paragraph>Start Y: </Paragraph>
+						<SizeButton onClick={() => changeStartY(-1)}>-</SizeButton>
+						<Size>{startY}</Size>
+						<SizeButtonRight onClick={() => changeStartY(1)}>+</SizeButtonRight>
+					</SizeContainer>
+				</Container>
+				<Container>
+					<Paragraph>
+						End coordinates are x =
+						{' '}
+						{endX}
+						{' '}
+						and y =
+						{' '}
+						{endY}
+					</Paragraph>
+					<SizeContainer>
+						<Paragraph>End X: </Paragraph>
+						<SizeButton onClick={() => changeEndX(-1)}>-</SizeButton>
+						<Size>{endX}</Size>
+						<SizeButtonRight onClick={() => changeEndX(1)}>+</SizeButtonRight>
+					</SizeContainer>
+					<SizeContainer>
+						<Paragraph>End Y: </Paragraph>
+						<SizeButton onClick={() => changeEndY(-1)}>-</SizeButton>
+						<Size>{endY}</Size>
+						<SizeButtonRight onClick={() => changeEndY(1)}>+</SizeButtonRight>
+					</SizeContainer>
+				</Container>
+			</InformationDiv>
+			<LinkContainer>
+				<StyledButton onClick={goToGamePage}>Play/Run</StyledButton>
+			</LinkContainer>
+			{startX === endX && startY === endY ? <ErrorParagraph>Start and end are equal, please change one!</ErrorParagraph> : null}
+		</Wrapper>
+	);
+};
 
-const mapStateToProps = state => {
-  return {
-    start: state.gameConfig.start,
-    end: state.gameConfig.end,
-    gridSize: state.gameConfig.gridSize,
-  }
-}
+const mapStateToProps = state => ({
+	startX: state.gameConfig.startX,
+	startY: state.gameConfig.startY,
+	endX: state.gameConfig.endX,
+	endY: state.gameConfig.endY,
+	cols: state.gameConfig.cols,
+	rows: state.gameConfig.rows,
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    changeColumnSize: (value) => dispatch(actions.changeColumnSize(value)),
-    changeRowSize: (value) => dispatch(actions.changeRowSize(value)),
-    changeStartX: (value) => dispatch(actions.changeStartX(value)),
-    changeStartY: (value) => dispatch(actions.changeStartY(value)),
-    changeEndX: (value) => dispatch(actions.changeEndX(value)),
-    changeEndY: (value) => dispatch(actions.changeEndY(value)),
-  }
-}
+const mapDispatchToProps = dispatch => (
+	{
+		changeColumnSize: value => dispatch(actions.changeColumnSize(value)),
+		changeRowSize: value => dispatch(actions.changeRowSize(value)),
+		changeStartX: value => dispatch(actions.changeStartX(value)),
+		changeStartY: value => dispatch(actions.changeStartY(value)),
+		changeEndX: value => dispatch(actions.changeEndX(value)),
+		changeEndY: value => dispatch(actions.changeEndY(value)),
+	}
+);
+
+HomePage.propTypes = {
+	cols: propTypes.number.isRequired,
+	rows: propTypes.number.isRequired,
+	startX: propTypes.number.isRequired,
+	startY: propTypes.number.isRequired,
+	endX: propTypes.number.isRequired,
+	endY: propTypes.number.isRequired,
+	changeColumnSize: propTypes.func.isRequired,
+	changeRowSize: propTypes.func.isRequired,
+	changeStartX: propTypes.func.isRequired,
+	changeStartY: propTypes.func.isRequired,
+	changeEndX: propTypes.func.isRequired,
+	changeEndY: propTypes.func.isRequired,
+	// eslint-disable-next-line react/forbid-prop-types
+	history: propTypes.object.isRequired,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

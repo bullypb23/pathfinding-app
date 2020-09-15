@@ -36,18 +36,16 @@ const RightNav = styled.div`
   justify-content: flex-end;
 `;
 
-const Header = () => {
-  return (
-    <StyledHeader>
-      <LeftNav>
-        <StyledLink to='/'>Pathfinding algorithms</StyledLink>
-      </LeftNav>
-      <RightNav>
-        <StyledLink to='/'>Home</StyledLink>
-        <StyledLink to='/levels'>Levels</StyledLink>
-      </RightNav>
-    </StyledHeader>
-  )
-}
+const Header = () => (
+	<StyledHeader>
+		<LeftNav>
+			<StyledLink to="/">Pathfinding algorithms</StyledLink>
+		</LeftNav>
+		<RightNav>
+			<StyledLink to="/">Home</StyledLink>
+			<StyledLink to="/levels">Levels</StyledLink>
+		</RightNav>
+	</StyledHeader>
+);
 
 export default Header;

@@ -1,53 +1,61 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
-import Grid from './components/Grid';
+import propTypes from 'prop-types';
+import { connect } from 'react-redux';
+import {
+	Switch, Route, Redirect, withRouter,
+} from 'react-router-dom';
+import styled from 'styled-components';
+// import Grid from './components/Grid';
 import Header from './components/Header';
 import HomePage from './components/HomePage';
-import { connect } from 'react-redux';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom'; 
 import * as actions from './store/actions/gameConfig';
-import styled from 'styled-components';
 
 const Container = styled.div`
-  width: 100%;
-  padding: 30px 0;
+	width: 100%;
+	padding: 30px 0;
 `;
 
-class App extends Component {
-  componentDidMount() {
-    let grid = new Array(this.props.gridSize.cols);
-    for (let i = 0; i < this.props.gridSize.cols; i++) {
-      grid[i] = new Array(this.props.gridSize.rows);
-    }
-    this.props.makeGrid(grid);
-  }
-  
-  render() {
-    return (
-      <div className="App">
-        <Header />
-        <Container>
-          <Switch>
-            <Route exact path='/' component={HomePage} />
-            <Route path='/game' component={Grid} />
-            <Redirect to='/' />
-          </Switch>
-        </Container>
-      </div>
-    );
-  }
-}
+const App = ({ cols, rows, makeGrid }) => {
+	useEffect(() => {
+		const grid = new Array(cols);
+		for (let i = 0; i < cols; i += 1) {
+			grid[i] = new Array(rows);
+		}
+		makeGrid(grid);
+	}, []);
 
-const mapStateToProps = state => {
-  return {
-    gridSize: state.gameConfig.gridSize,
-  }
-}
+	return (
+		<div className="App">
+			<Header />
+			<Container>
+				<Switch>
+					<Route exact path="/" component={HomePage} />
+					{/* <Route path="/game" component={Grid} /> */}
+					<Redirect to="/" />
+				</Switch>
+			</Container>
+		</div>
+	);
+};
 
-const mapDispatchToProps = dispatch => {
-  return {
-    makeGrid: (grid) => dispatch(actions.makeGrid(grid)),
-  }
-}
+App.propTypes = {
+	cols: propTypes.number.isRequired,
+	rows: propTypes.number.isRequired,
+	makeGrid: propTypes.func.isRequired,
+};
+
+const mapStateToProps = state => (
+	{
+		cols: state.gameConfig.cols,
+		rows: state.gameConfig.rows,
+	}
+);
+
+const mapDispatchToProps = dispatch => (
+	{
+		makeGrid: grid => dispatch(actions.makeGrid(grid)),
+	}
+);
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));
