@@ -32,7 +32,7 @@ const StyledButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 1.2rem;
-  text-decoration: none;
+  outline: none;
   cursor: pointer;
 
   &:hover {
@@ -93,7 +93,7 @@ const ErrorParagraph = styled(Paragraph)`
 `;
 
 const HomePage = ({
-	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY,
+	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY, makeGrid,
 }) => {
 	useEffect(() => {
 		if (cols === 0) {
@@ -130,6 +130,17 @@ const HomePage = ({
 	}, [cols, endX, endY, rows, startX, startY]);
 
 	const goToGamePage = () => {
+		const newGrid = new Array(rows);
+		for (let i = 0; i < rows; i += 1) {
+			newGrid[i] = new Array(cols);
+		}
+
+		for (let i = 0; i < rows; i += 1) {
+			for (let j = 0; j < cols; j += 1) {
+				newGrid[i][j] = 1;
+			}
+		}
+		makeGrid(newGrid);
 		// eslint-disable-next-line react/prop-types
 		history.push('/game');
 	};
@@ -236,6 +247,7 @@ const mapDispatchToProps = dispatch => (
 		changeStartY: value => dispatch(actions.changeStartY(value)),
 		changeEndX: value => dispatch(actions.changeEndX(value)),
 		changeEndY: value => dispatch(actions.changeEndY(value)),
+		makeGrid: grid => dispatch(actions.makeGrid(grid)),
 	}
 );
 
@@ -252,6 +264,7 @@ HomePage.propTypes = {
 	changeStartY: propTypes.func.isRequired,
 	changeEndX: propTypes.func.isRequired,
 	changeEndY: propTypes.func.isRequired,
+	makeGrid: propTypes.func.isRequired,
 	// eslint-disable-next-line react/forbid-prop-types
 	history: propTypes.object.isRequired,
 };
