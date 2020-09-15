@@ -8,3 +8,6 @@ export const CHANGE_START_Y = 'CHANGE_START_Y';
 
 export const CHANGE_END_X = 'CHANGE_END_X';
 export const CHANGE_END_Y = 'CHANGE_END_Y';
+
+export const TOGGLE_ALGORITHM = 'TOGGLE_ALGORITHM';
+export const ADD_RESULT = 'ADD_RESULT';

@@ -7,11 +7,11 @@ import { createStore, combineReducers } from 'redux';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import gameConfigReducer from './store/reducers/gameConfig';
-import dataReducer from './store/reducers/data';
+import gameReducer from './store/reducers/game';
 
 const rootReducer = combineReducers({
 	gameConfig: gameConfigReducer,
-	data: dataReducer,
+	game: gameReducer,
 });
 
 const store = createStore(

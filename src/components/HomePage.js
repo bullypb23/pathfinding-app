@@ -137,7 +137,7 @@ const HomePage = ({
 
 		for (let i = 0; i < rows; i += 1) {
 			for (let j = 0; j < cols; j += 1) {
-				newGrid[i][j] = 1;
+				newGrid[i][j] = [i, j];
 			}
 		}
 		makeGrid(newGrid);
