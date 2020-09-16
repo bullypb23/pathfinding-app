@@ -6,6 +6,8 @@ const initialState = {
 	dijkstra: false,
 	levels: {},
 	level: 1,
+	blocks: {},
+	maxLevel: 1,
 };
 
 const reducer = (state = initialState, action) => {
@@ -34,6 +36,34 @@ const reducer = (state = initialState, action) => {
 		return {
 			...state,
 			level: state.level + 1,
+			blocks: {
+				...state.blocks,
+				[state.level + 1]: [],
+			},
+		};
+	case actionTypes.MAX_LEVEL_HANDLER:
+		return {
+			...state,
+			maxLevel: (action.num1 * action.num2) - 1,
+		};
+	case actionTypes.ADD_BLOCKS:
+		return {
+			...state,
+			blocks: {
+				...state.blocks,
+				[state.level]: [
+					action.block,
+				],
+			},
+		};
+	case actionTypes.HANDLE_ALGORITHM_REPLAY:
+		return {
+			...state,
+			replay: {
+				name: action.name,
+				data: action.info,
+				level: action.levelNum,
+			},
 		};
 	default: return state;
 	}

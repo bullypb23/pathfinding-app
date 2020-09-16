@@ -26,7 +26,7 @@ function sortNodesByDistance(unvisitedNodes) {
 	return unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
 }
 
-const setup = (rows, cols) => {
+const setup = (rows, cols, blocks) => {
 	// making 2D array
 	for (let i = 0; i < cols; i += 1) {
 		grid[i] = new Array(rows);
@@ -43,9 +43,21 @@ const setup = (rows, cols) => {
 			grid[i][j].addNeighbors(grid, rows, cols);
 		}
 	}
+
+	if (blocks.length !== 0) {
+		for (let i = 0; i < cols; i += 1) {
+			for (let j = 0; j < rows; j += 1) {
+				for (let k = 0; k < blocks.length; k += 1) {
+					if (grid[i][j].i === blocks[k][1] && grid[i][j].j === blocks[k][0]) {
+						grid[i][j].block = true;
+					}
+				}
+			}
+		}
+	}
 };
 
-export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY) {
+export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY, blocks) {
 	const startTime = Date.now();
 	let endTime;
 	let time;
@@ -55,7 +67,7 @@ export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY
 	const visitedNodes = [];
 	const path = [];
 
-	setup(rows, cols);
+	setup(rows, cols, blocks);
 
 	start = grid[startX][startY];
 	end = grid[endX][endY];
@@ -76,7 +88,7 @@ export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY
 
 		if (closestNode === end) {
 			endTime = Date.now();
-			time = (startTime - endTime) / 1000;
+			time = Math.abs((endTime - startTime) / 1000);
 			let temp = closestNode;
 			path.push(temp);
 			while (temp.previousNode) {

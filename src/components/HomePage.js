@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import propTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import * as actions from '../store/actions/gameConfig';
+import * as gameConfigActions from '../store/actions/gameConfig';
+import * as gameActions from '../store/actions/game';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -93,7 +94,7 @@ const ErrorParagraph = styled(Paragraph)`
 `;
 
 const HomePage = ({
-	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY, makeGrid,
+	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY, makeGrid, handleMaxLevel,
 }) => {
 	useEffect(() => {
 		if (cols === 0) {
@@ -141,6 +142,7 @@ const HomePage = ({
 			}
 		}
 		makeGrid(newGrid);
+		handleMaxLevel(cols, rows);
 		// eslint-disable-next-line react/prop-types
 		history.push('/game');
 	};
@@ -241,13 +243,14 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => (
 	{
-		changeColumnSize: value => dispatch(actions.changeColumnSize(value)),
-		changeRowSize: value => dispatch(actions.changeRowSize(value)),
-		changeStartX: value => dispatch(actions.changeStartX(value)),
-		changeStartY: value => dispatch(actions.changeStartY(value)),
-		changeEndX: value => dispatch(actions.changeEndX(value)),
-		changeEndY: value => dispatch(actions.changeEndY(value)),
-		makeGrid: grid => dispatch(actions.makeGrid(grid)),
+		changeColumnSize: value => dispatch(gameConfigActions.changeColumnSize(value)),
+		changeRowSize: value => dispatch(gameConfigActions.changeRowSize(value)),
+		changeStartX: value => dispatch(gameConfigActions.changeStartX(value)),
+		changeStartY: value => dispatch(gameConfigActions.changeStartY(value)),
+		changeEndX: value => dispatch(gameConfigActions.changeEndX(value)),
+		changeEndY: value => dispatch(gameConfigActions.changeEndY(value)),
+		makeGrid: grid => dispatch(gameConfigActions.makeGrid(grid)),
+		handleMaxLevel: (num1, num2) => dispatch(gameActions.handleMaxLevel(num1, num2)),
 	}
 );
 
@@ -265,6 +268,7 @@ HomePage.propTypes = {
 	changeEndX: propTypes.func.isRequired,
 	changeEndY: propTypes.func.isRequired,
 	makeGrid: propTypes.func.isRequired,
+	handleMaxLevel: propTypes.func.isRequired,
 	// eslint-disable-next-line react/forbid-prop-types
 	history: propTypes.object.isRequired,
 };

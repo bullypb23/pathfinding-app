@@ -21,18 +21,7 @@ function Node(i, j) {
 	};
 }
 
-// if (level > 0) {
-// 	for (let i = 0; i < level; i++) {
-// 		const x = randomNumber();
-// 		const y = randomNumber();
-// 		if (grid[x][y] !== start && grid[x][y] !== end) {
-// 			grid[x][y].block = true;
-// 			blocks.push(grid[x][y]);
-// 		}
-// 	}
-// }
-
-const setup = (cols, rows) => {
+const setup = (cols, rows, blocks) => {
 	// making 2D array
 	for (let i = 0; i < cols; i += 1) {
 		grid[i] = new Array(rows);
@@ -49,9 +38,21 @@ const setup = (cols, rows) => {
 			grid[i][j].addEdges(grid, rows, cols);
 		}
 	}
+
+	if (blocks.length !== 0) {
+		for (let i = 0; i < cols; i += 1) {
+			for (let j = 0; j < rows; j += 1) {
+				for (let k = 0; k < blocks.length; k += 1) {
+					if (grid[i][j].i === blocks[k][1] && grid[i][j].j === blocks[k][0]) {
+						grid[i][j].block = true;
+					}
+				}
+			}
+		}
+	}
 };
 
-export default function bfs(rows, cols, startX, startY, endX, endY) {
+export default function bfs(rows, cols, startX, startY, endX, endY, blocks) {
 	let startTime = Date.now();
 	let endTime;
 	let time;
@@ -61,7 +62,7 @@ export default function bfs(rows, cols, startX, startY, endX, endY) {
 	const visitedNodes = [];
 	const path = [];
 
-	setup(cols, rows);
+	setup(cols, rows, blocks);
 
 	start = grid[startX][startY];
 	end = grid[endX][endY];
@@ -75,7 +76,7 @@ export default function bfs(rows, cols, startX, startY, endX, endY) {
 
 		if (current === end) {
 			endTime = Date.now();
-			time = (endTime - startTime) / 1000;
+			time = Math.abs((endTime - startTime) / 1000);
 			let temp = current;
 			path.push(temp);
 			while (temp.parent) {
