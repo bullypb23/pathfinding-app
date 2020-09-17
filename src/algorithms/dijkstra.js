@@ -116,7 +116,6 @@ export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY
 				neighbors[i].visited = true;
 				neighbors[i].distance = closestNode.distance + 1;
 				neighbors[i].previousNode = closestNode;
-				// unvisitedNodes.push(neighbors[i]);
 			}
 		}
 	}

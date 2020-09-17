@@ -3,7 +3,6 @@
 const grid = [];
 
 function heuristic(a, b) {
-	// var d = p5.dist(a.i, b.i, a.j, b.j);
 	const d = Math.abs(a.i - b.i) + Math.abs(a.j - b.j);
 	return d;
 }
