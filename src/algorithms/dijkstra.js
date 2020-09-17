@@ -26,6 +26,16 @@ function sortNodesByDistance(unvisitedNodes) {
 	return unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
 }
 
+function getAllNodes(grid, cols, rows) {
+	const nodes = [];
+	for (let i = 0; i < cols; i += 1) {
+		for (let j = 0; j < rows; j += 1) {
+			nodes.push(grid[i][j]);
+		}
+	}
+	return nodes;
+}
+
 const setup = (rows, cols, blocks) => {
 	// making 2D array
 	for (let i = 0; i < cols; i += 1) {
@@ -72,9 +82,9 @@ export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY
 	start = grid[startX][startY];
 	end = grid[endX][endY];
 
-	unvisitedNodes.push(start);
-
 	start.distance = 0;
+
+	unvisitedNodes = getAllNodes(grid, cols, rows);
 
 	while (unvisitedNodes.length > 0) {
 		unvisitedNodes = sortNodesByDistance(unvisitedNodes);
@@ -106,7 +116,7 @@ export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY
 				neighbors[i].visited = true;
 				neighbors[i].distance = closestNode.distance + 1;
 				neighbors[i].previousNode = closestNode;
-				unvisitedNodes.push(neighbors[i]);
+				// unvisitedNodes.push(neighbors[i]);
 			}
 		}
 	}

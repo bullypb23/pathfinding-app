@@ -1,12 +1,19 @@
 import * as actionTypes from '../actions/actionTypes';
 
+const START_X = 0;
+const START_Y = 4;
+const END_X = 9;
+const END_Y = 4;
+const COLS = 10;
+const ROWS = 10;
+
 const initialState = {
-	startX: 0,
-	startY: 4,
-	endX: 9,
-	endY: 4,
-	cols: 10,
-	rows: 10,
+	startX: START_X,
+	startY: START_Y,
+	endX: END_X,
+	endY: END_Y,
+	cols: COLS,
+	rows: ROWS,
 	grid: [],
 };
 
@@ -46,6 +53,17 @@ const reducer = (state = initialState, action) => {
 		return {
 			...state,
 			endY: state.endY + action.value,
+		};
+	case actionTypes.GAME_CONFIG_RESET_HANDLER:
+		return {
+			...state,
+			startX: START_X,
+			startY: START_Y,
+			endX: END_X,
+			endY: END_Y,
+			cols: COLS,
+			rows: ROWS,
+			grid: [],
 		};
 	default: return state;
 	}

@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import {
 	Switch, Route, Redirect, withRouter,
 } from 'react-router-dom';
@@ -9,14 +8,22 @@ import Header from './components/Header';
 import HomePage from './components/HomePage';
 import Levels from './components/Levels';
 import Replay from './components/Replay';
+import Global from './Global';
 
 const Container = styled.div`
 	width: 100%;
 	padding: 30px 0;
 `;
 
+const Wrapper = styled.div`
+	width: 100%;
+	text-align: center;
+	max-width: 100vw;
+`;
+
 const App = () => (
-	<div className="App">
+	<Wrapper>
+		<Global />
 		<Header />
 		<Container>
 			<Switch>
@@ -27,7 +34,7 @@ const App = () => (
 				<Redirect to="/" />
 			</Switch>
 		</Container>
-	</div>
+	</Wrapper>
 );
 
 export default withRouter(App);

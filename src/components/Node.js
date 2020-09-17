@@ -12,6 +12,11 @@ const StyledNode = styled.div`
 	${props => props.isStart === true && 'background-color: green'};
 	${props => props.isEnd === true && 'background-color: red'};
 	${props => props.isInShortestPath === true && 'background-color: #FFFE6A;  transition: all 1s;'};
+
+	@media (max-width: 576px) {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const Node = ({

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
@@ -13,23 +13,35 @@ const Heading = styled.h1`
   font-size: 4rem;
   color: #34495E;
   padding: 20px 0;
+
+	@media (max-width: 576px) {
+		font-size: 3rem;
+  }
 `;
 
 const InformationDiv = styled.div`
   display: flex;
-  justify-content: space-around;
+	justify-content: space-around;
+	margin-top: 20px;
+
+	@media (max-width: 768px) {
+		padding: 0 20px;
+		justify-content: center;
+		flex-wrap: wrap;
+  }
 `;
 
 const LinkContainer = styled.div`
   width: 100%;
-  margin-top: 20px;
-  padding: 20px 0;
+  margin-top: 10px;
+  padding: 10px 0;
 `;
 
 const StyledButton = styled.button`
   color: white;
   background-color: #1ABC9C;
   padding: 10px 20px;
+	margin: 0 10px;
   border: none;
   border-radius: 10px;
   font-size: 1.2rem;
@@ -39,19 +51,39 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #28E1BD;;
   }
+
+	&:disabled {
+		background-color: #AAAAAA;
+	}
 `;
 
 const Container = styled.div`
   flex-basis: 30%;
-  padding: 20px;
+	padding: 20px;
+	border: 1px solid #1ABC9C;
+	border-radius: 10px;
+
+	@media (max-width: 768px) {
+    flex-basis: 45%;
+		margin: 5px;
+  }
+	
+	@media (max-width: 576px) {
+    flex-basis: 100%;
+		margin: 10px 0;
+  }
 `;
 
 const Paragraph = styled.p`
   font-size: 1.2rem;
   padding: 10px 0;
+
+	@media (max-width: 576px) {
+    padding: 10px;
+  }
 `;
 
-const SizeButton = styled.div`
+const SizeButton = styled.button`
   outline: none;
   background-color: transparent;
   padding: 10px 15px;
@@ -94,8 +126,12 @@ const ErrorParagraph = styled(Paragraph)`
 `;
 
 const HomePage = ({
-	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize, changeStartX, changeStartY, changeEndX, changeEndY, makeGrid, handleMaxLevel,
+	history, startX, startY, endX, endY, cols, rows, changeColumnSize, changeRowSize,
+	changeStartX, changeStartY, changeEndX, changeEndY, makeGrid, handleMaxLevel, startGame, gameStarted,
+	gameResetHandler, gameConfigResetHandler,
 }) => {
+	const [equal, setEqual] = useState(false);
+
 	useEffect(() => {
 		if (cols === 0) {
 			changeColumnSize(10);
@@ -128,6 +164,13 @@ const HomePage = ({
 		} else if (endY > rows - 1) {
 			changeEndY(-rows);
 		}
+
+		if (startX === endX && startY === endY) {
+			setEqual(true);
+		} else {
+			setEqual(false);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [cols, endX, endY, rows, startX, startY]);
 
 	const goToGamePage = () => {
@@ -143,8 +186,14 @@ const HomePage = ({
 		}
 		makeGrid(newGrid);
 		handleMaxLevel(cols, rows);
+		startGame();
 		// eslint-disable-next-line react/prop-types
 		history.push('/game');
+	};
+
+	const handleReset = () => {
+		gameResetHandler();
+		gameConfigResetHandler();
 	};
 
 	return (
@@ -166,15 +215,15 @@ const HomePage = ({
 					</Paragraph>
 					<SizeContainer>
 						<Paragraph>Columns: </Paragraph>
-						<SizeButton onClick={() => changeColumnSize(-1)}>-</SizeButton>
+						<SizeButton disabled={gameStarted} onClick={() => changeColumnSize(-1)}>-</SizeButton>
 						<Size>{cols}</Size>
-						<SizeButtonRight onClick={() => changeColumnSize(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeColumnSize(1)}>+</SizeButtonRight>
 					</SizeContainer>
 					<SizeContainer>
 						<Paragraph>Rows: </Paragraph>
-						<SizeButton onClick={() => changeRowSize(-1)}>-</SizeButton>
+						<SizeButton disabled={gameStarted} onClick={() => changeRowSize(-1)}>-</SizeButton>
 						<Size>{rows}</Size>
-						<SizeButtonRight onClick={() => changeRowSize(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeRowSize(1)}>+</SizeButtonRight>
 					</SizeContainer>
 				</Container>
 				<Container>
@@ -188,16 +237,16 @@ const HomePage = ({
 						{startY}
 					</Paragraph>
 					<SizeContainer>
-						<Paragraph>Start X: </Paragraph>
-						<SizeButton onClick={() => changeStartX(-1)}>-</SizeButton>
+						<Paragraph>X: </Paragraph>
+						<SizeButton disabled={gameStarted} onClick={() => changeStartX(-1)}>-</SizeButton>
 						<Size>{startX}</Size>
-						<SizeButtonRight onClick={() => changeStartX(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeStartX(1)}>+</SizeButtonRight>
 					</SizeContainer>
 					<SizeContainer>
-						<Paragraph>Start Y: </Paragraph>
-						<SizeButton onClick={() => changeStartY(-1)}>-</SizeButton>
+						<Paragraph>Y: </Paragraph>
+						<SizeButton disabled={gameStarted} onClick={() => changeStartY(-1)}>-</SizeButton>
 						<Size>{startY}</Size>
-						<SizeButtonRight onClick={() => changeStartY(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeStartY(1)}>+</SizeButtonRight>
 					</SizeContainer>
 				</Container>
 				<Container>
@@ -211,23 +260,24 @@ const HomePage = ({
 						{endY}
 					</Paragraph>
 					<SizeContainer>
-						<Paragraph>End X: </Paragraph>
-						<SizeButton onClick={() => changeEndX(-1)}>-</SizeButton>
+						<Paragraph>X: </Paragraph>
+						<SizeButton disabled={gameStarted} onClick={() => changeEndX(-1)}>-</SizeButton>
 						<Size>{endX}</Size>
-						<SizeButtonRight onClick={() => changeEndX(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeEndX(1)}>+</SizeButtonRight>
 					</SizeContainer>
 					<SizeContainer>
-						<Paragraph>End Y: </Paragraph>
-						<SizeButton onClick={() => changeEndY(-1)}>-</SizeButton>
+						<Paragraph>Y: </Paragraph>
+						<SizeButton disabled={gameStarted} onClick={() => changeEndY(-1)}>-</SizeButton>
 						<Size>{endY}</Size>
-						<SizeButtonRight onClick={() => changeEndY(1)}>+</SizeButtonRight>
+						<SizeButtonRight disabled={gameStarted} onClick={() => changeEndY(1)}>+</SizeButtonRight>
 					</SizeContainer>
 				</Container>
 			</InformationDiv>
 			<LinkContainer>
-				<StyledButton onClick={goToGamePage}>Play/Run</StyledButton>
+				<StyledButton disabled={equal} onClick={goToGamePage}>Play/Run</StyledButton>
+				<StyledButton onClick={handleReset}>Reset</StyledButton>
 			</LinkContainer>
-			{startX === endX && startY === endY ? <ErrorParagraph>Start and end are equal, please change one!</ErrorParagraph> : null}
+			{equal ? <ErrorParagraph>Start and end are equal, please change one!</ErrorParagraph> : null}
 		</Wrapper>
 	);
 };
@@ -239,6 +289,7 @@ const mapStateToProps = state => ({
 	endY: state.gameConfig.endY,
 	cols: state.gameConfig.cols,
 	rows: state.gameConfig.rows,
+	gameStarted: state.game.gameStarted,
 });
 
 const mapDispatchToProps = dispatch => (
@@ -251,6 +302,9 @@ const mapDispatchToProps = dispatch => (
 		changeEndY: value => dispatch(gameConfigActions.changeEndY(value)),
 		makeGrid: grid => dispatch(gameConfigActions.makeGrid(grid)),
 		handleMaxLevel: (num1, num2) => dispatch(gameActions.handleMaxLevel(num1, num2)),
+		startGame: () => dispatch(gameActions.startGame()),
+		gameResetHandler: () => dispatch(gameActions.gameResetHandler()),
+		gameConfigResetHandler: () => dispatch(gameConfigActions.gameConfigResetHandler()),
 	}
 );
 
@@ -269,6 +323,10 @@ HomePage.propTypes = {
 	changeEndY: propTypes.func.isRequired,
 	makeGrid: propTypes.func.isRequired,
 	handleMaxLevel: propTypes.func.isRequired,
+	startGame: propTypes.func.isRequired,
+	gameStarted: propTypes.bool.isRequired,
+	gameResetHandler: propTypes.func.isRequired,
+	gameConfigResetHandler: propTypes.func.isRequired,
 	// eslint-disable-next-line react/forbid-prop-types
 	history: propTypes.object.isRequired,
 };

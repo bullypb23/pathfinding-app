@@ -23,6 +23,12 @@ const Heading = styled.h1`
 	color: #34495E;
 `;
 
+const Paragraph = styled.p`
+	font-size: 1rem;
+	color: #34495E;
+	padding: 5px 0;
+`;
+
 const Levels = ({ levels, handleAlgorithmReplay, history }) => {
 	const handleReplay = (name, info, levelNum) => {
 		handleAlgorithmReplay(name, info, levelNum);
@@ -42,6 +48,7 @@ const Levels = ({ levels, handleAlgorithmReplay, history }) => {
 						handleAlgorithmReplay={handleReplay}
 					/>
 				))}
+				{Object.keys(levels).length === 0 ? <Paragraph>There is no played levels.</Paragraph> : null}
 			</Container>
 		</Wrapper>
 	);

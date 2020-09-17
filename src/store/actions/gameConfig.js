@@ -48,3 +48,9 @@ export const changeEndY = value => (
 		value,
 	}
 );
+
+export const gameConfigResetHandler = () => (
+	{
+		type: actyonTypes.GAME_CONFIG_RESET_HANDLER,
+	}
+);

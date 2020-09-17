@@ -43,3 +43,27 @@ export const handleAlgorithmReplay = (name, info, levelNum) => (
 		levelNum,
 	}
 );
+
+export const handleNoResult = () => (
+	{
+		type: actionTypes.HANDLE_NO_RESULT,
+	}
+);
+
+export const startGame = () => (
+	{
+		type: actionTypes.HANDLE_GAME_START,
+	}
+);
+
+export const gameResetHandler = () => (
+	{
+		type: actionTypes.GAME_RESET_HANDLER,
+	}
+);
+
+export const setAutomatic = () => (
+	{
+		type: actionTypes.AUTOMATIC_HANDLER,
+	}
+);

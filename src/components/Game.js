@@ -1,11 +1,10 @@
 /* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
-import Node from './Node';
+import MapComponent from './MapComponent';
 import * as actions from '../store/actions/game';
 import astarAlgorithm from '../algorithms/astar';
 import bfsAlgorithm from '../algorithms/bfs';
@@ -25,6 +24,10 @@ const Section = styled.div`
 	display: flex;
 	justify-content: space-around;
 	align-items: flex-start;
+
+	@media (max-width: 576px) {
+    flex-wrap: wrap;
+  }
 `;
 
 const AlgorithmsContainer = styled.div`
@@ -33,6 +36,10 @@ const AlgorithmsContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	padding: 10px;
+
+	@media (max-width: 576px) {
+    padding: 0;
+  }
 `;
 
 const Checkbox = styled.input`
@@ -56,23 +63,16 @@ const ErrorParagraph = styled.p`
 	color: red;
 `;
 
-const MapContainer = styled.div`
-	width: 100%;
-	padding: 20px 0;
-`;
-
-const Row = styled.div`
-	width: 100%;
-	height: 30px;
-	display: flex;
-	justify-content: center;
-`;
-
 const ButtonContainer = styled.div`
 	width: 100%;
 	padding: 20px 0;
 	display: flex;
 	justify-content: center;
+
+	@media (max-width: 576px) {
+		flex-direction: column;
+		align-items: center;
+  }
 `;
 
 const Button = styled.button`
@@ -93,12 +93,29 @@ const Button = styled.button`
 	&:disabled {
 		background-color: #AAAAAA;
 	}
+
+	@media (max-width: 576px) {
+    width: 50%;
+  }
 `;
 
 const Game = ({
-	grid, rows, cols, startX, startY, endX, endY, toggleAlgorithm, astar, bfs, dijkstra, addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
+	grid, rows, cols, startX, startY, endX, endY, toggleAlgorithm, astar, bfs,
+	dijkstra, addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
+	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted,
 }) => {
 	const [error, setError] = useState(false);
+
+	useEffect(() => {
+		if (automatic && gameStarted && !gameFinished) {
+			// eslint-disable-next-line no-use-before-define
+			runAlgotithms();
+			// eslint-disable-next-line no-use-before-define
+			handleNextLevel();
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [automatic, level, gameFinished]);
+
 	let blocksArr = [];
 
 	if (level > 1) {
@@ -121,6 +138,9 @@ const Game = ({
 				addResult({
 					name: 'astar', path, visitedNodes, time,
 				});
+			} else {
+				handleNoResult();
+				return;
 			}
 		}
 
@@ -130,6 +150,9 @@ const Game = ({
 				addResult({
 					name: 'bfs', path, visitedNodes, time,
 				});
+			} else {
+				handleNoResult();
+				return;
 			}
 		}
 
@@ -139,6 +162,8 @@ const Game = ({
 				addResult({
 					name: 'dijkstra', path, visitedNodes, time,
 				});
+			} else {
+				handleNoResult();
 			}
 		}
 	};
@@ -175,6 +200,10 @@ const Game = ({
 		}
 	};
 
+	const handleAutomatic = () => {
+		setAutomatic();
+	};
+
 	if (grid.length === 0) {
 		return <Redirect to="/" />;
 	}
@@ -198,12 +227,12 @@ const Game = ({
 	return (
 		<Wrapper>
 			<Container>
-				<Heading>Select algorithms you want to use</Heading>
 				<Heading>
 					Level:
 					{' '}
 					{level}
 				</Heading>
+				<Heading>Select algorithms you want to use</Heading>
 				<Section>
 					<AlgorithmsContainer>
 						<Checkbox checked={astar} type="checkbox" value="astar" id="astar" onChange={e => toggleAlgorithm(e.target.value)} />
@@ -220,25 +249,19 @@ const Game = ({
 				</Section>
 				{error ? <ErrorParagraph>Please select one pathfinding algorithm</ErrorParagraph> : null}
 			</Container>
-			<MapContainer>
-				{grid.map((row, rowIndex) => (
-					<Row key={rowIndex}>
-						{row.map((node, nodeIndex) => (
-							<Node
-								key={nodeIndex}
-								row={rowIndex}
-								col={nodeIndex}
-								isStart={+rowIndex === +startY && +nodeIndex === +startX}
-								isEnd={+rowIndex === +endY && +nodeIndex === +endX}
-								isBlock={isNodeBlock(node)}
-							/>
-						))}
-					</Row>
-				))}
-			</MapContainer>
+			<MapComponent
+				grid={grid}
+				startX={startX}
+				startY={startY}
+				endX={endX}
+				endY={endY}
+				isNodeBlock={isNodeBlock}
+			/>
+			{gameFinished ? <ErrorParagraph>There is no path available, end of game!</ErrorParagraph> : null}
 			<ButtonContainer>
-				<Button onClick={runAlgotithms} disabled={disabled}>Play</Button>
-				<Button onClick={handleNextLevel}>Next Level</Button>
+				<Button onClick={runAlgotithms} disabled={disabled || gameFinished}>Play</Button>
+				<Button onClick={handleNextLevel} disabled={gameFinished}>Next Level</Button>
+				<Button onClick={handleAutomatic} disabled={gameFinished}>Automatic Play</Button>
 			</ButtonContainer>
 		</Wrapper>
 	);
@@ -261,8 +284,13 @@ Game.propTypes = {
 	addResult: propTypes.func.isRequired,
 	addBlocks: propTypes.func.isRequired,
 	nextLevelHandler: propTypes.func.isRequired,
+	handleNoResult: propTypes.func.isRequired,
+	setAutomatic: propTypes.func.isRequired,
 	levels: propTypes.object.isRequired,
 	blocks: propTypes.object.isRequired,
+	gameFinished: propTypes.bool.isRequired,
+	gameStarted: propTypes.bool.isRequired,
+	automatic: propTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => (
@@ -281,6 +309,9 @@ const mapStateToProps = state => (
 		levels: state.game.levels,
 		blocks: state.game.blocks,
 		maxLevel: state.game.maxLevel,
+		gameFinished: state.game.gameFinished,
+		gameStarted: state.game.gameStarted,
+		automatic: state.game.automatic,
 	}
 );
 
@@ -290,6 +321,8 @@ const mapDispatchToProps = dispatch => (
 		addResult: algorithmData => dispatch(actions.addResult(algorithmData)),
 		nextLevelHandler: () => dispatch(actions.nextLevelHandler()),
 		addBlocks: block => dispatch(actions.addBlocks(block)),
+		handleNoResult: () => dispatch(actions.handleNoResult()),
+		setAutomatic: () => dispatch(actions.setAutomatic()),
 	}
 );
 

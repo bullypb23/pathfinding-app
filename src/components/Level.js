@@ -8,6 +8,14 @@ const Wrapper = styled.div`
 	display: flex;
 	flex-wrap: wrap;
 	margin: 10px;
+	
+	@media (max-width: 576px) {
+		flex-basis: 90%;
+  }
+
+	@media (max-width: 768px) {
+		flex-basis: 90%;
+  }
 `;
 
 const LevelNumber = styled.div`
@@ -22,6 +30,10 @@ const AlgorithmContainer = styled.div`
 	flex: 1 1 100%;
 	display: flex;
 	border: 1px solid #CCCCCC;
+
+	@media (max-width: 576px) {
+    flex-wrap: wrap;
+  }
 `;
 
 const Algorithm = styled.div`
@@ -91,8 +103,6 @@ const Level = ({ algorithms, number, handleAlgorithmReplay }) => {
 					return (
 						<Algorithm key={al}>
 							<SmallHeading>
-								Algorithm:
-								{' '}
 								{name}
 							</SmallHeading>
 							<Paragraph>

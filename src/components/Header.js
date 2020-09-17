@@ -8,6 +8,10 @@ const StyledHeader = styled.header`
   background-color: #34495E;
   display: flex;
   padding: 0 30px;
+
+  @media (max-width: 576px) {
+    padding: 0;
+  }
 `;
 
 const LeftNav = styled.div`
@@ -39,7 +43,7 @@ const RightNav = styled.div`
 const Header = () => (
 	<StyledHeader>
 		<LeftNav>
-			<StyledLink to="/">Pathfinding algorithms</StyledLink>
+			<StyledLink to="/">Pathfinding app</StyledLink>
 		</LeftNav>
 		<RightNav>
 			<StyledLink to="/">Home</StyledLink>

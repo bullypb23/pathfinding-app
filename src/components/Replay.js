@@ -6,22 +6,10 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
-import Node from './Node';
+import MapComponent from './MapComponent';
 
 const Wrapper = styled.div`
 	width: 100%;
-`;
-
-const MapContainer = styled.div`
-	width: 100%;
-	padding: 20px 0;
-`;
-
-const Row = styled.div`
-	width: 100%;
-	height: 30px;
-	display: flex;
-	justify-content: center;
 `;
 
 const SmallHeading = styled.h5`
@@ -48,7 +36,7 @@ const Button = styled.button`
 `;
 
 const Replay = ({
-	grid, replay, startX, startY, endX, endY, level, maxLevel, blocks,
+	grid, replay, startX, startY, endX, endY, blocks,
 }) => {
 	const [nodesArray, setNodesArray] = useState([]);
 	const [shortestPath, setShortestPath] = useState([]);
@@ -66,9 +54,9 @@ const Replay = ({
 	};
 
 	const isNodeBlock = (node) => {
-		if (level > 1 && level <= maxLevel) {
-			for (let i = 0; i < blocks[level][0].length; i += 1) {
-				if (blocks[level][0][i][0] === node[0] && blocks[level][0][i][1] === node[1]) {
+		if (blocks[replay.level]) {
+			for (let i = 0; i < blocks[replay.level][0].length; i += 1) {
+				if (blocks[replay.level][0][i][0] === node[0] && blocks[replay.level][0][i][1] === node[1]) {
 					return true;
 				}
 			}
@@ -98,7 +86,7 @@ const Replay = ({
 		return false;
 	};
 
-	if (!replay) {
+	if (Object.keys(replay).length === 0) {
 		return <Redirect to="/" />;
 	}
 
@@ -111,11 +99,13 @@ const Replay = ({
 		}
 	};
 
+	const reverseArray = arr => arr.reverse();
+
 	const animateAlgorithm = () => {
 		setNodesArray([]);
 		setShortestPath([]);
 
-		const shortestPathReverse = replay.data.path.reverse();
+		const shortestPathReverse = reverseArray(replay.data.path);
 
 		const visitedNodesInOrder = replay.data.visitedNodes;
 
@@ -144,24 +134,16 @@ const Replay = ({
 				{' '}
 				{algorithmName(replay.name)}
 			</SmallHeading>
-			<MapContainer>
-				{grid.map((row, rowIndex) => (
-					<Row key={rowIndex}>
-						{row.map((node, nodeIndex) => (
-							<Node
-								key={nodeIndex}
-								row={rowIndex}
-								col={nodeIndex}
-								isStart={+rowIndex === +startY && +nodeIndex === +startX}
-								isEnd={+rowIndex === +endY && +nodeIndex === +endX}
-								isBlock={isNodeBlock(node)}
-								isVisited={isVisitedNode(node)}
-								isInShortestPath={isInShortestPath(node)}
-							/>
-						))}
-					</Row>
-				))}
-			</MapContainer>
+			<MapComponent
+				grid={grid}
+				startX={startX}
+				startY={startY}
+				endX={endX}
+				endY={endY}
+				isNodeBlock={isNodeBlock}
+				isVisitedNode={isVisitedNode}
+				isInShortestPath={isInShortestPath}
+			/>
 			<Button onClick={animateAlgorithm}>Replay</Button>
 		</Wrapper>
 	);
@@ -173,8 +155,6 @@ Replay.propTypes = {
 	startY: propTypes.number.isRequired,
 	endX: propTypes.number.isRequired,
 	endY: propTypes.number.isRequired,
-	level: propTypes.number.isRequired,
-	maxLevel: propTypes.number.isRequired,
 	replay: propTypes.object.isRequired,
 	blocks: propTypes.object.isRequired,
 };
