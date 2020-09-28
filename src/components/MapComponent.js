@@ -1,29 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
-import styled from 'styled-components';
 import propTypes from 'prop-types';
 import Node from './Node';
-
-const MapContainer = styled.div`
-	width: 100%;
-	padding: 20px 0;
-
-	@media (max-width: 576px) {
-		max-width: 100vw;
-		padding: 20px 10px;
-  }
-`;
-
-const Row = styled.div`
-	width: 100%;
-	height: 30px;
-	display: flex;
-	justify-content: center;
-
-	@media (max-width: 576px) {
-    height: 20px;
-  }
-`;
+import { MapContainer, Row } from './MapComponent.styles';
 
 const MapComponent = ({
 	grid, startX, startY, endX, endY, isNodeBlock, isVisitedNode, isInShortestPath,

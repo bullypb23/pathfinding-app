@@ -1,26 +1,9 @@
-/* eslint-disable no-underscore-dangle */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
 import { BrowserRouter } from 'react-router-dom';
+import { store } from './store/store';
 import App from './App';
-import gameConfigReducer from './store/reducers/gameConfig';
-import gameReducer from './store/reducers/game';
-
-const rootReducer = combineReducers({
-	gameConfig: gameConfigReducer,
-	game: gameReducer,
-});
-
-const store = createStore(
-	rootReducer,
-	typeof window === 'object' &&
-  typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined'
-		? window.__REDUX_DEVTOOLS_EXTENSION__()
-		: f => f
-);
 
 ReactDOM.render(
 	<Provider store={store}>

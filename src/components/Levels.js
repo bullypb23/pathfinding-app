@@ -1,33 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
 import * as actions from '../store/actions/game';
 import Level from './Level';
-
-const Wrapper = styled.div`
-	width: 100%;
-`;
-
-const Container = styled.div`
-	width: 100%;
-	display: flex;
-	padding: 20px 40px;
-	justify-content: center;
-	flex-wrap: wrap;
-`;
-
-const Heading = styled.h1`
-	width: 100%;
-	font-size: 4rem;
-	color: #34495E;
-`;
-
-const Paragraph = styled.p`
-	font-size: 1rem;
-	color: #34495E;
-	padding: 5px 0;
-`;
+import {
+	Wrapper, Heading, Container, Paragraph,
+} from './Levels.styles';
 
 const Levels = ({ levels, handleAlgorithmReplay, history }) => {
 	const handleReplay = (name, info, levelNum) => {

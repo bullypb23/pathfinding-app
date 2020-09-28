@@ -2,38 +2,11 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
 import MapComponent from './MapComponent';
-
-const Wrapper = styled.div`
-	width: 100%;
-`;
-
-const SmallHeading = styled.h5`
-	font-size: 1.3rem;
-	color: #34495E;
-	font-weight: bold;
-	padding-bottom: 10px;
-`;
-
-const Button = styled.button`
-	color: white;
-  background-color: #1ABC9C;
-  padding: 10px 20px;
-	margin: 10px;
-  border: none;
-	outline: none;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #28E1BD;
-  }
-`;
+import { Wrapper, SmallHeading, Button } from './Replay.styles';
 
 const Replay = ({
 	grid, replay, startX, startY, endX, endY, blocks,
