@@ -1,9 +1,7 @@
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
-	astar: false,
-	bfs: false,
-	dijkstra: false,
+	grid: [],
 	levels: {},
 	level: 1,
 	blocks: {},
@@ -16,10 +14,10 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
-	case actionTypes.TOGGLE_ALGORITHM:
+	case actionTypes.MAKE_GRID:
 		return {
 			...state,
-			[action.algorithm]: !state[action.algorithm],
+			grid: action.grid,
 		};
 	case actionTypes.ADD_RESULT:
 		return {
@@ -87,9 +85,7 @@ const reducer = (state = initialState, action) => {
 	case actionTypes.GAME_RESET_HANDLER:
 		return {
 			...state,
-			astar: false,
-			bfs: false,
-			dijkstra: false,
+			grid: [],
 			levels: {},
 			level: 1,
 			blocks: {},

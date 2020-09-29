@@ -1,56 +1,38 @@
-import * as actyonTypes from './actionTypes';
+import * as actionTypes from './actionTypes';
 
-export const makeGrid = grid => (
+export const setGrid = (x, y) => (
 	{
-		type: actyonTypes.MAKE_GRID,
-		grid,
+		type: actionTypes.SET_GRID,
+		x,
+		y,
 	}
 );
 
-export const changeColumnSize = value => (
+export const setStart = (x, y) => (
 	{
-		type: actyonTypes.CHANGE_COLUMN_SIZE,
-		value,
+		type: actionTypes.SET_START,
+		x,
+		y,
 	}
 );
 
-export const changeRowSize = value => (
+export const setEnd = (x, y) => (
 	{
-		type: actyonTypes.CHANGE_ROW_SIZE,
-		value,
-	}
-);
-
-export const changeStartX = value => (
-	{
-		type: actyonTypes.CHANGE_START_X,
-		value,
-	}
-);
-
-export const changeStartY = value => (
-	{
-		type: actyonTypes.CHANGE_START_Y,
-		value,
-	}
-);
-
-export const changeEndX = value => (
-	{
-		type: actyonTypes.CHANGE_END_X,
-		value,
-	}
-);
-
-export const changeEndY = value => (
-	{
-		type: actyonTypes.CHANGE_END_Y,
-		value,
+		type: actionTypes.SET_END,
+		x,
+		y,
 	}
 );
 
 export const gameConfigResetHandler = () => (
 	{
-		type: actyonTypes.GAME_CONFIG_RESET_HANDLER,
+		type: actionTypes.GAME_CONFIG_RESET_HANDLER,
+	}
+);
+
+export const toggleAlgorithm = algorithm => (
+	{
+		type: actionTypes.TOGGLE_ALGORITHM,
+		algorithm,
 	}
 );

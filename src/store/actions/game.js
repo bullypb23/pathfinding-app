@@ -1,9 +1,9 @@
 import * as actionTypes from './actionTypes';
 
-export const toggleAlgorithm = algorithm => (
+export const makeGrid = grid => (
 	{
-		type: actionTypes.TOGGLE_ALGORITHM,
-		algorithm,
+		type: actionTypes.MAKE_GRID,
+		grid,
 	}
 );
 

@@ -8,62 +8,79 @@ const COLS = 10;
 const ROWS = 10;
 
 const initialState = {
-	startX: START_X,
-	startY: START_Y,
-	endX: END_X,
-	endY: END_Y,
-	cols: COLS,
-	rows: ROWS,
-	grid: [],
+	start: {
+		x: START_X,
+		y: START_Y,
+	},
+	end: {
+		x: END_X,
+		y: END_Y,
+	},
+	gridSize: {
+		cols: COLS,
+		rows: ROWS,
+	},
+	algorithms: {
+		astar: false,
+		bfs: false,
+		dijkstra: false,
+	},
 };
 
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
-	case actionTypes.MAKE_GRID:
+	case actionTypes.SET_GRID:
 		return {
 			...state,
-			grid: action.grid,
+			gridSize: {
+				cols: state.gridSize.cols + action.x,
+				rows: state.gridSize.rows + action.y,
+			},
 		};
-	case actionTypes.CHANGE_COLUMN_SIZE:
+	case actionTypes.SET_START:
 		return {
 			...state,
-			cols: state.cols + action.value,
+			start: {
+				x: state.start.x + action.x,
+				y: state.start.y + action.y,
+			},
 		};
-	case actionTypes.CHANGE_ROW_SIZE:
+	case actionTypes.SET_END:
 		return {
 			...state,
-			rows: state.rows + action.value,
+			end: {
+				x: state.end.x + action.x,
+				y: state.end.y + action.y,
+			},
 		};
-	case actionTypes.CHANGE_START_X:
+	case actionTypes.TOGGLE_ALGORITHM:
 		return {
 			...state,
-			startX: state.startX + action.value,
-		};
-	case actionTypes.CHANGE_START_Y:
-		return {
-			...state,
-			startY: state.startY + action.value,
-		};
-	case actionTypes.CHANGE_END_X:
-		return {
-			...state,
-			endX: state.endX + action.value,
-		};
-	case actionTypes.CHANGE_END_Y:
-		return {
-			...state,
-			endY: state.endY + action.value,
+			algorithms: {
+				...state.algorithms,
+				[action.algorithm]: !state.algorithms[action.algorithm],
+			},
 		};
 	case actionTypes.GAME_CONFIG_RESET_HANDLER:
 		return {
 			...state,
-			startX: START_X,
-			startY: START_Y,
-			endX: END_X,
-			endY: END_Y,
-			cols: COLS,
-			rows: ROWS,
-			grid: [],
+			start: {
+				x: START_X,
+				y: START_Y,
+			},
+			end: {
+				x: END_X,
+				y: END_Y,
+			},
+			gridSize: {
+				cols: COLS,
+				rows: ROWS,
+			},
+			algorithms: {
+				astar: false,
+				bfs: false,
+				dijkstra: false,
+			},
 		};
 	default: return state;
 	}

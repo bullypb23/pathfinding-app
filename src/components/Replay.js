@@ -7,24 +7,13 @@ import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
 import MapComponent from './MapComponent';
 import { Wrapper, SmallHeading, Button } from './Replay.styles';
+import algorithmName from '../shared/common';
 
 const Replay = ({
-	grid, replay, startX, startY, endX, endY, blocks,
+	grid, replay, start, end, blocks,
 }) => {
 	const [nodesArray, setNodesArray] = useState([]);
 	const [shortestPath, setShortestPath] = useState([]);
-
-	const algorithmName = (al) => {
-		let alName;
-		if (al === 'astar') {
-			alName = 'A* algorithm';
-		} else if (al === 'bfs') {
-			alName = 'Breadth-first Search';
-		} else if (al === 'dijkstra') {
-			alName = 'Dijkstra';
-		}
-		return alName;
-	};
 
 	const isNodeBlock = (node) => {
 		if (blocks[replay.level]) {
@@ -109,10 +98,8 @@ const Replay = ({
 			</SmallHeading>
 			<MapComponent
 				grid={grid}
-				startX={startX}
-				startY={startY}
-				endX={endX}
-				endY={endY}
+				start={start}
+				end={end}
 				isNodeBlock={isNodeBlock}
 				isVisitedNode={isVisitedNode}
 				isInShortestPath={isInShortestPath}
@@ -124,10 +111,8 @@ const Replay = ({
 
 Replay.propTypes = {
 	grid: propTypes.array.isRequired,
-	startX: propTypes.number.isRequired,
-	startY: propTypes.number.isRequired,
-	endX: propTypes.number.isRequired,
-	endY: propTypes.number.isRequired,
+	start: propTypes.object.isRequired,
+	end: propTypes.object.isRequired,
 	replay: propTypes.object.isRequired,
 	blocks: propTypes.object.isRequired,
 };
@@ -138,11 +123,9 @@ const mapStateToProps = state => (
 		level: state.game.level,
 		blocks: state.game.blocks,
 		maxLevel: state.game.maxLevel,
-		grid: state.gameConfig.grid,
-		startX: state.gameConfig.startX,
-		startY: state.gameConfig.startY,
-		endX: state.gameConfig.endX,
-		endY: state.gameConfig.endY,
+		grid: state.game.grid,
+		start: state.gameConfig.start,
+		end: state.gameConfig.end,
 	}
 );
 

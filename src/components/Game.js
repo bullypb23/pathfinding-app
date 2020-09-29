@@ -1,24 +1,22 @@
 /* eslint-disable react/forbid-prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import MapComponent from './MapComponent';
 import * as actions from '../store/actions/game';
 import astarAlgorithm from '../algorithms/astar';
 import bfsAlgorithm from '../algorithms/bfs';
 import dijkstraAlgorithm from '../algorithms/dijkstra';
 import {
-	Wrapper, Container, Heading, Section, AlgorithmsContainer, Checkbox, Label, ErrorParagraph, Button, ButtonContainer,
+	Wrapper, Container, Heading, ErrorParagraph, Button, ButtonContainer,
 } from './Game.styles';
 
 const Game = ({
-	grid, rows, cols, startX, startY, endX, endY, toggleAlgorithm, astar, bfs,
-	dijkstra, addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
+	grid, gridSize, start, end, algorithms, makeGrid, handleMaxLevel,
+	addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
 	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted,
 }) => {
-	const [error, setError] = useState(false);
-
 	useEffect(() => {
 		if (automatic && gameStarted && !gameFinished) {
 			// eslint-disable-next-line no-use-before-define
@@ -28,6 +26,28 @@ const Game = ({
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [automatic, level, gameFinished]);
+
+	const useQuery = () => new URLSearchParams(useLocation().search);
+
+	const query = useQuery();
+
+	useEffect(() => {
+		const cols = query.get('cols');
+		const rows = query.get('rows');
+		const newGrid = new Array(rows);
+		for (let i = 0; i < rows; i += 1) {
+			newGrid[i] = new Array(cols);
+		}
+
+		for (let i = 0; i < gridSize.rows; i += 1) {
+			for (let j = 0; j < gridSize.cols; j += 1) {
+				newGrid[i][j] = [i, j];
+			}
+		}
+		makeGrid(newGrid);
+		handleMaxLevel(cols, rows);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	let blocksArr = [];
 
@@ -39,14 +59,8 @@ const Game = ({
 	const randomNumber = num => Math.floor(Math.random() * num);
 
 	const runAlgotithms = () => {
-		if (!astar && !bfs && !dijkstra) {
-			setError(true);
-		} else {
-			setError(false);
-		}
-
-		if (astar) {
-			const [success, path, visitedNodes, time] = astarAlgorithm(rows, cols, startX, startY, endX, endY, blocksArr);
+		if (algorithms.astar) {
+			const [success, path, visitedNodes, time] = astarAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
 			if (success) {
 				addResult({
 					name: 'astar', path, visitedNodes, time,
@@ -57,8 +71,8 @@ const Game = ({
 			}
 		}
 
-		if (bfs) {
-			const [success, path, visitedNodes, time] = bfsAlgorithm(rows, cols, startX, startY, endX, endY, blocksArr);
+		if (algorithms.bfs) {
+			const [success, path, visitedNodes, time] = bfsAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
 			if (success) {
 				addResult({
 					name: 'bfs', path, visitedNodes, time,
@@ -69,8 +83,8 @@ const Game = ({
 			}
 		}
 
-		if (dijkstra) {
-			const [success, path, visitedNodes, time] = dijkstraAlgorithm(rows, cols, startX, startY, endX, endY, blocksArr);
+		if (algorithms.dijkstra) {
+			const [success, path, visitedNodes, time] = dijkstraAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
 			if (success) {
 				addResult({
 					name: 'dijkstra', path, visitedNodes, time,
@@ -82,9 +96,9 @@ const Game = ({
 	};
 
 	const randomBlocks = (board) => {
-		const x = randomNumber(rows);
-		const y = randomNumber(cols);
-		if ((x === startY && y === startX) || (x === endY && y === endX)) {
+		const x = randomNumber(gridSize.rows);
+		const y = randomNumber(gridSize.cols);
+		if ((x === start.y && y === start.x) || (x === end.y && y === end.x)) {
 			return randomBlocks(board);
 		}
 		return board[x][y];
@@ -117,7 +131,7 @@ const Game = ({
 		setAutomatic();
 	};
 
-	if (grid.length === 0) {
+	if (!gameStarted) {
 		return <Redirect to="/" />;
 	}
 
@@ -145,29 +159,11 @@ const Game = ({
 					{' '}
 					{level}
 				</Heading>
-				<Heading>Select algorithms you want to use</Heading>
-				<Section>
-					<AlgorithmsContainer>
-						<Checkbox checked={astar} type="checkbox" value="astar" id="astar" onChange={e => toggleAlgorithm(e.target.value)} />
-						<Label htmlFor="astar">A* Search</Label>
-					</AlgorithmsContainer>
-					<AlgorithmsContainer>
-						<Checkbox checked={bfs} type="checkbox" value="bfs" id="bfs" onChange={e => toggleAlgorithm(e.target.value)} />
-						<Label htmlFor="bfs">Breadth-first Search</Label>
-					</AlgorithmsContainer>
-					<AlgorithmsContainer>
-						<Checkbox checked={dijkstra} type="checkbox" value="dijkstra" id="dijkstra" onChange={e => toggleAlgorithm(e.target.value)} />
-						<Label htmlFor="dijkstra">Dijkstra</Label>
-					</AlgorithmsContainer>
-				</Section>
-				{error ? <ErrorParagraph>Please select one pathfinding algorithm</ErrorParagraph> : null}
 			</Container>
 			<MapComponent
 				grid={grid}
-				startX={startX}
-				startY={startY}
-				endX={endX}
-				endY={endY}
+				start={start}
+				end={end}
 				isNodeBlock={isNodeBlock}
 			/>
 			{gameFinished ? <ErrorParagraph>There is no path available, end of game!</ErrorParagraph> : null}
@@ -182,18 +178,14 @@ const Game = ({
 
 Game.propTypes = {
 	grid: propTypes.array.isRequired,
-	rows: propTypes.number.isRequired,
-	cols: propTypes.number.isRequired,
-	startX: propTypes.number.isRequired,
-	startY: propTypes.number.isRequired,
-	endX: propTypes.number.isRequired,
-	endY: propTypes.number.isRequired,
+	gridSize: propTypes.object.isRequired,
+	start: propTypes.object.isRequired,
+	end: propTypes.object.isRequired,
 	level: propTypes.number.isRequired,
 	maxLevel: propTypes.number.isRequired,
-	toggleAlgorithm: propTypes.func.isRequired,
-	astar: propTypes.bool.isRequired,
-	bfs: propTypes.bool.isRequired,
-	dijkstra: propTypes.bool.isRequired,
+	algorithms: propTypes.object.isRequired,
+	makeGrid: propTypes.func.isRequired,
+	handleMaxLevel: propTypes.func.isRequired,
 	addResult: propTypes.func.isRequired,
 	addBlocks: propTypes.func.isRequired,
 	nextLevelHandler: propTypes.func.isRequired,
@@ -208,16 +200,11 @@ Game.propTypes = {
 
 const mapStateToProps = state => (
 	{
-		grid: state.gameConfig.grid,
-		rows: state.gameConfig.rows,
-		cols: state.gameConfig.cols,
-		startX: state.gameConfig.startX,
-		startY: state.gameConfig.startY,
-		endX: state.gameConfig.endX,
-		endY: state.gameConfig.endY,
-		astar: state.game.astar,
-		bfs: state.game.bfs,
-		dijkstra: state.game.dijkstra,
+		grid: state.game.grid,
+		gridSize: state.gameConfig.gridSize,
+		start: state.gameConfig.start,
+		end: state.gameConfig.end,
+		algorithms: state.gameConfig.algorithms,
 		level: state.game.level,
 		levels: state.game.levels,
 		blocks: state.game.blocks,
@@ -230,12 +217,13 @@ const mapStateToProps = state => (
 
 const mapDispatchToProps = dispatch => (
 	{
-		toggleAlgorithm: algorithm => dispatch(actions.toggleAlgorithm(algorithm)),
 		addResult: algorithmData => dispatch(actions.addResult(algorithmData)),
 		nextLevelHandler: () => dispatch(actions.nextLevelHandler()),
 		addBlocks: block => dispatch(actions.addBlocks(block)),
 		handleNoResult: () => dispatch(actions.handleNoResult()),
 		setAutomatic: () => dispatch(actions.setAutomatic()),
+		makeGrid: grid => dispatch(actions.makeGrid(grid)),
+		handleMaxLevel: (num1, num2) => dispatch(actions.handleMaxLevel(num1, num2)),
 	}
 );
 
