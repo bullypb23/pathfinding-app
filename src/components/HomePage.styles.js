@@ -119,3 +119,7 @@ export const Size = styled.div`
 export const ErrorParagraph = styled(Paragraph)`
   color: red;
 `;
+
+export const Span = styled.span`
+  font-size: inherit;
+`;

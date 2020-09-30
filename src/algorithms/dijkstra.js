@@ -92,7 +92,7 @@ export default function dijkstraAlgorithm(gridSize, startCoords, endCoords, bloc
 			let closestNode = unvisitedNodes.shift();
 
 			if (closestNode.distance === Infinity) {
-				return ['dijkstra', false, path, visitedNodes, time];
+				return ['dijkstra', false, path, visitedNodes, time, blocks];
 			}
 			closestNode.visited = true;
 			visitedNodes.push(closestNode);
@@ -107,7 +107,7 @@ export default function dijkstraAlgorithm(gridSize, startCoords, endCoords, bloc
 					temp = temp.previousNode;
 				}
 
-				return resolve(['dijkstra', true, path, visitedNodes, time]);
+				return resolve(['dijkstra', true, path, visitedNodes, time, blocks]);
 			}
 
 			let { neighbors } = closestNode;
@@ -121,6 +121,6 @@ export default function dijkstraAlgorithm(gridSize, startCoords, endCoords, bloc
 			}
 		}
 
-		return resolve(['dijkstra', false, path, visitedNodes, time]);
+		return resolve(['dijkstra', false, path, visitedNodes, time, blocks]);
 	});
 }

@@ -20,10 +20,10 @@ export const nextLevelHandler = () => (
 	}
 );
 
-export const addBlocks = block => (
+export const addBlocks = blocks => (
 	{
 		type: actionTypes.ADD_BLOCKS,
-		block,
+		blocks,
 	}
 );
 
@@ -65,5 +65,11 @@ export const gameResetHandler = () => (
 export const setAutomatic = () => (
 	{
 		type: actionTypes.AUTOMATIC_HANDLER,
+	}
+);
+
+export const startAlgorithmsRun = () => (
+	{
+		type: actionTypes.START_RUN,
 	}
 );

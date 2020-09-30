@@ -10,26 +10,14 @@ import { Wrapper, SmallHeading, Button } from './Replay.styles';
 import algorithmName from '../shared/common';
 
 const Replay = ({
-	grid, replay, start, end, blocks,
+	grid, replay, start, end,
 }) => {
-	const [nodesArray, setNodesArray] = useState([]);
 	const [shortestPath, setShortestPath] = useState([]);
 
 	const isNodeBlock = (node) => {
-		if (blocks[replay.level]) {
-			for (let i = 0; i < blocks[replay.level][0].length; i += 1) {
-				if (blocks[replay.level][0][i][0] === node[0] && blocks[replay.level][0][i][1] === node[1]) {
-					return true;
-				}
-			}
-		}
-		return false;
-	};
-
-	const isVisitedNode = (node) => {
-		if (nodesArray.length !== 0) {
-			for (let i = 0; i < nodesArray.length; i += 1) {
-				if (nodesArray[i].j === node[0] && nodesArray[i].i === node[1]) {
+		if (replay.data.blocks) {
+			for (let i = 0; i < replay.data.blocks.length; i += 1) {
+				if (replay.data.blocks[i][0] === node[0] && replay.data.blocks[i][1] === node[1]) {
 					return true;
 				}
 			}
@@ -61,28 +49,9 @@ const Replay = ({
 		}
 	};
 
-	const reverseArray = arr => arr.reverse();
-
 	const animateAlgorithm = () => {
-		setNodesArray([]);
 		setShortestPath([]);
-
-		const shortestPathReverse = reverseArray(replay.data.path);
-
-		const visitedNodesInOrder = replay.data.visitedNodes;
-
-		for (let i = 0; i <= visitedNodesInOrder.length; i += 1) {
-			if (i === visitedNodesInOrder.length) {
-				setTimeout(() => {
-					animateShortestPath(shortestPathReverse);
-				}, i * 50);
-				return;
-			}
-			setTimeout(() => {
-				const node = visitedNodesInOrder[i];
-				setNodesArray(oldArray => [...oldArray, node]);
-			}, i * 50);
-		}
+		animateShortestPath(replay.data.path.reverse());
 	};
 
 	return (
@@ -101,7 +70,6 @@ const Replay = ({
 				start={start}
 				end={end}
 				isNodeBlock={isNodeBlock}
-				isVisitedNode={isVisitedNode}
 				isInShortestPath={isInShortestPath}
 			/>
 			<Button onClick={animateAlgorithm}>Replay</Button>
@@ -114,14 +82,12 @@ Replay.propTypes = {
 	start: propTypes.object.isRequired,
 	end: propTypes.object.isRequired,
 	replay: propTypes.object.isRequired,
-	blocks: propTypes.object.isRequired,
 };
 
 const mapStateToProps = state => (
 	{
 		replay: state.game.replay,
 		level: state.game.level,
-		blocks: state.game.blocks,
 		maxLevel: state.game.maxLevel,
 		grid: state.game.grid,
 		start: state.gameConfig.start,

@@ -6,7 +6,7 @@ import Node from './Node';
 import { MapContainer, Row } from './MapComponent.styles';
 
 const MapComponent = ({
-	grid, start, end, isNodeBlock, isVisitedNode, isInShortestPath,
+	grid, start, end, isNodeBlock, isInShortestPath,
 }) => (
 	<MapContainer>
 		{grid.map((row, rowIndex) => (
@@ -19,7 +19,6 @@ const MapComponent = ({
 						isStart={+rowIndex === +start.y && +nodeIndex === +start.x}
 						isEnd={+rowIndex === +end.y && +nodeIndex === +end.x}
 						isBlock={isNodeBlock(node)}
-						isVisited={isVisitedNode(node)}
 						isInShortestPath={isInShortestPath(node)}
 					/>
 				))}
@@ -33,14 +32,10 @@ MapComponent.propTypes = {
 	start: propTypes.object.isRequired,
 	end: propTypes.object.isRequired,
 	isNodeBlock: propTypes.func.isRequired,
-	isVisitedNode: propTypes.func,
 	isInShortestPath: propTypes.func,
 };
 
 MapComponent.defaultProps = {
-	isVisitedNode: () => {
-
-	},
 	isInShortestPath: () => {
 
 	},

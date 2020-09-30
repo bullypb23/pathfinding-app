@@ -14,17 +14,21 @@ import {
 } from './Game.styles';
 
 const Game = ({
-	grid, gridSize, start, end, algorithms, makeGrid, handleMaxLevel,
+	grid, gridSize, start, end, algorithms, makeGrid, handleMaxLevel, startAlgorithmsRun,
 	addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
-	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted,
+	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted, startRun,
 }) => {
 	const [shortestPath, setShortestPath] = useState([]);
+
 	useEffect(() => {
-		if (automatic && gameStarted && !gameFinished) {
+		const automaticFunction = async () => {
 			// eslint-disable-next-line no-use-before-define
-			runAlgotithms();
+			await runAlgotithms();
 			// eslint-disable-next-line no-use-before-define
 			handleNextLevel();
+		};
+		if (automatic && gameStarted && !gameFinished) {
+			automaticFunction();
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [automatic, level, gameFinished]);
@@ -60,17 +64,20 @@ const Game = ({
 
 	if (level > 1) {
 		// eslint-disable-next-line prefer-destructuring
-		blocksArr = blocks[level][0];
+		blocksArr = blocks[0];
 	}
 
 	const randomNumber = num => Math.floor(Math.random() * num);
 
-	const animateShortestPath = (nodesInShortestPathOrder) => {
-		for (let i = 0; i < nodesInShortestPathOrder.length; i += 1) {
-			setTimeout(() => {
-				const node = nodesInShortestPathOrder[i];
-				setShortestPath(oldArray => [...oldArray, node]);
-			}, i * 50);
+	const animateShortestPath = async (nodesInShortestPathOrder) => {
+		const animationPromises = nodesInShortestPathOrder.map(node => () => new Promise((resolve) => {
+			setTimeout(() => resolve(node), 100);
+		}));
+
+		// eslint-disable-next-line no-restricted-syntax
+		for await (const node of animationPromises) {
+			const value = await node();
+			setShortestPath(oldArray => [...oldArray, value]);
 		}
 	};
 
@@ -98,79 +105,35 @@ const Game = ({
 			return obj;
 		}, []);
 
-	async function runAlgotithms() {
+	const runAlgotithms = async () => {
+		startAlgorithmsRun();
 		const selectedAlgoritms = Object.entries(algorithms).filter(arr => arr[1]).map(arr => arr[0]);
 		const algorithmsToRun = getAlgorithmFunctions(selectedAlgoritms);
 
-		// eslint-disable-next-line no-console
-		const fastestAlgorithm = await Promise.race(Object.keys(algorithmsToRun)
-			.map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
-			// .then(value => animateShortestPath(value[2].reverse()));
+		const fastestAlgorithm = await Promise.race(Object.keys(algorithmsToRun).map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
 
 		if (fastestAlgorithm[1] === true) {
-			animateShortestPath(fastestAlgorithm[2].reverse());
+			await animateShortestPath(fastestAlgorithm[2].reverse());
 		} else {
 			handleNoResult();
 			return;
 		}
 
-		const responses = await Promise.all(Object.keys(algorithmsToRun)
-			.map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
+		const responses = await Promise.all(Object.keys(algorithmsToRun).map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
 
-		// eslint-disable-next-line array-callback-return
-		responses.map((response) => {
-			const [name, success, path, visitedNodes, time] = response;
-			console.log(response);
-			if (success) {
-				addResult({
-					name,
-					path,
-					visitedNodes,
-					time,
-				});
-			}
+		responses.forEach((response) => {
+			const [name, success, path, visitedNodes, time, wall] = response;
+			addResult({
+				name,
+				path,
+				visitedNodes,
+				time,
+				wall,
+				level,
+			});
 		});
-		// .then((result) => {
-		// 	// eslint-disable-next-line array-callback-return
-		// 	result.map((res) => {
-		// 		const [name, success, path, visitedNodes, time] = res;
-		// 		if (success) {
-		// 			addResult({
-		// 				name,
-		// 				path,
-		// 				visitedNodes,
-		// 				time,
-		// 			});
-		// 		} else {
-		// 			handleNoResult();
-		// 			// eslint-disable-next-line no-useless-return
-		// 			return;
-		// 		}
-		// 	});
-		// });
-		// Object.keys(algorithmsToRun).forEach((key) => {
-		// 	const algorithm = algorithmsToRun[key];
-		// 	const [success, path, visitedNodes, time] = algorithm(
-		// 		gridSize.rows,
-		// 		gridSize.cols,
-		// 		start.x,
-		// 		start.y,
-		// 		end.x,
-		// 		end.y,
-		// 		blocksArr
-		// 	);
-		// 	if (success) {
-		// 		addResult({
-		// 			name: key,
-		// 			path,
-		// 			visitedNodes,
-		// 			time,
-		// 		});
-		// 	} else {
-		// 		handleNoResult();
-		// 	}
-		// });
-	}
+		startAlgorithmsRun();
+	};
 
 	const randomBlocks = (board) => {
 		const x = randomNumber(gridSize.rows);
@@ -219,9 +182,9 @@ const Game = ({
 	}
 
 	const isNodeBlock = (node) => {
-		if (level > 1 && level <= maxLevel) {
-			for (let i = 0; i < blocks[level][0].length; i += 1) {
-				if (blocks[level][0][i][0] === node[0] && blocks[level][0][i][1] === node[1]) {
+		if (level > 1 && level <= maxLevel && blocks.length) {
+			for (let i = 0; i < blocks[0].length; i += 1) {
+				if (blocks[0][i][0] === node[0] && blocks[0][i][1] === node[1]) {
 					return true;
 				}
 			}
@@ -248,8 +211,8 @@ const Game = ({
 			{gameFinished ? <ErrorParagraph>There is no path available, end of game!</ErrorParagraph> : null}
 			<ButtonContainer>
 				<Button onClick={runAlgotithms} disabled={disabled || gameFinished}>Play</Button>
-				<Button onClick={handleNextLevel} disabled={gameFinished}>Next Level</Button>
-				<Button onClick={handleAutomatic} disabled={gameFinished}>Automatic Play</Button>
+				<Button onClick={handleNextLevel} disabled={gameFinished || startRun}>Next Level</Button>
+				<Button onClick={handleAutomatic} disabled={gameFinished || disabled}>Automatic Play</Button>
 			</ButtonContainer>
 		</Wrapper>
 	);
@@ -270,11 +233,13 @@ Game.propTypes = {
 	nextLevelHandler: propTypes.func.isRequired,
 	handleNoResult: propTypes.func.isRequired,
 	setAutomatic: propTypes.func.isRequired,
+	startAlgorithmsRun: propTypes.func.isRequired,
 	levels: propTypes.object.isRequired,
-	blocks: propTypes.object.isRequired,
+	blocks: propTypes.array.isRequired,
 	gameFinished: propTypes.bool.isRequired,
 	gameStarted: propTypes.bool.isRequired,
 	automatic: propTypes.bool.isRequired,
+	startRun: propTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => (
@@ -291,6 +256,7 @@ const mapStateToProps = state => (
 		gameFinished: state.game.gameFinished,
 		gameStarted: state.game.gameStarted,
 		automatic: state.game.automatic,
+		startRun: state.game.startRun,
 	}
 );
 
@@ -303,6 +269,7 @@ const mapDispatchToProps = dispatch => (
 		setAutomatic: () => dispatch(actions.setAutomatic()),
 		makeGrid: grid => dispatch(actions.makeGrid(grid)),
 		handleMaxLevel: (num1, num2) => dispatch(actions.handleMaxLevel(num1, num2)),
+		startAlgorithmsRun: () => dispatch(actions.startAlgorithmsRun()),
 	}
 );
 

@@ -97,7 +97,7 @@ export default function astarAlgorithm(gridSize, startCoords, endCoords, blocks)
 					temp = temp.previous;
 				}
 
-				return resolve(['astar', true, path, closedSet, time]);
+				return resolve(['astar', true, path, closedSet, time, blocks]);
 			}
 
 			openSet = openSet.filter(el => current !== el);
@@ -133,6 +133,6 @@ export default function astarAlgorithm(gridSize, startCoords, endCoords, blocks)
 		}
 		endTime = Date.now();
 		time = (endTime - startTime) / 1000;
-		return resolve(['astar', false, path, closedSet, time]);
+		return resolve(['astar', false, path, closedSet, time, blocks]);
 	});
 }

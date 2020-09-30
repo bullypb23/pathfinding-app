@@ -4,12 +4,13 @@ const initialState = {
 	grid: [],
 	levels: {},
 	level: 1,
-	blocks: {},
+	blocks: [],
 	replay: {},
 	maxLevel: 1,
 	gameStarted: false,
 	gameFinished: false,
 	automatic: false,
+	startRun: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -24,12 +25,13 @@ const reducer = (state = initialState, action) => {
 			...state,
 			levels: {
 				...state.levels,
-				[state.level]: {
-					...state.levels[state.level],
+				[action.algorithmData.level]: {
+					...state.levels[action.algorithmData.level],
 					[action.algorithmData.name]: {
 						path: action.algorithmData.path,
 						visitedNodes: action.algorithmData.visitedNodes,
 						time: action.algorithmData.time,
+						blocks: action.algorithmData.wall,
 					},
 				},
 			},
@@ -38,25 +40,22 @@ const reducer = (state = initialState, action) => {
 		return {
 			...state,
 			level: state.level + 1,
-			blocks: {
-				...state.blocks,
-				[state.level + 1]: [],
-			},
+			// blocks: {
+			// 	...state.blocks,
+			// 	[state.level + 1]: [],
+			// },
+		};
+	case actionTypes.ADD_BLOCKS:
+		return {
+			...state,
+			blocks: [
+				action.blocks,
+			],
 		};
 	case actionTypes.MAX_LEVEL_HANDLER:
 		return {
 			...state,
 			maxLevel: (action.num1 * action.num2) - 1,
-		};
-	case actionTypes.ADD_BLOCKS:
-		return {
-			...state,
-			blocks: {
-				...state.blocks,
-				[state.level]: [
-					action.block,
-				],
-			},
 		};
 	case actionTypes.HANDLE_ALGORITHM_REPLAY:
 		return {
@@ -88,12 +87,17 @@ const reducer = (state = initialState, action) => {
 			grid: [],
 			levels: {},
 			level: 1,
-			blocks: {},
+			blocks: [],
 			replay: {},
 			maxLevel: 1,
 			gameStarted: false,
 			gameFinished: false,
 			automatic: false,
+		};
+	case actionTypes.START_RUN:
+		return {
+			...state,
+			startRun: !state.startRun,
 		};
 	default: return state;
 	}

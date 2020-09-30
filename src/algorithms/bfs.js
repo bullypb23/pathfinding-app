@@ -85,7 +85,7 @@ export default function bfs(gridSize, startCoords, endCoords, blocks) {
 					temp = temp.parent;
 				}
 
-				return resolve(['bfs', true, path, visitedNodes, time]);
+				return resolve(['bfs', true, path, visitedNodes, time, blocks]);
 			}
 
 			const { edges } = current;
@@ -100,6 +100,6 @@ export default function bfs(gridSize, startCoords, endCoords, blocks) {
 		}
 		endTime = Date.now();
 		time = (endTime - startTime) / 1000;
-		return resolve(['bfs', false, path, visitedNodes, time]);
+		return resolve(['bfs', false, path, visitedNodes, time, blocks]);
 	});
 }

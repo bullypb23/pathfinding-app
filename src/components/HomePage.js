@@ -5,7 +5,7 @@ import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
 	Wrapper, InformationDiv, Heading, LinkContainer, StyledButton, Container, Paragraph,
-	SizeButton, SizeButtonRight, SizeContainer, Size, ErrorParagraph,
+	SizeButton, SizeButtonRight, SizeContainer, Size, ErrorParagraph, Span,
 } from './HomePage.styles';
 import Algorithms from './Algorithms';
 import * as gameConfigActions from '../store/actions/gameConfig';
@@ -86,7 +86,13 @@ const HomePage = ({
 			<Paragraph>
 				Selected algorithms are:
 				{' '}
-				{Object.entries(algorithms).filter(arr => arr[1]).map(arr => algorithmName(arr[0]))}
+				{Object.entries(algorithms).filter(arr => arr[1]).map(arr => (
+					<Span key={arr[0]}>
+						{algorithmName(arr[0])}
+						,
+						{' '}
+					</Span>
+				))}
 			</Paragraph>
 			<Algorithms />
 			{error ? <ErrorParagraph>Please select one pathfinding algorithm</ErrorParagraph> : null}
