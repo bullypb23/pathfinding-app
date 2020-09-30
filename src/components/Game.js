@@ -15,7 +15,7 @@ import {
 
 const Game = ({
 	grid, gridSize, start, end, algorithms, makeGrid, handleMaxLevel, startAlgorithmsRun,
-	addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
+	addResult, level, nextLevelHandler, levels, blocks, maxLevel,
 	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted, startRun,
 }) => {
 	const [shortestPath, setShortestPath] = useState([]);
@@ -64,7 +64,7 @@ const Game = ({
 
 	if (level > 1) {
 		// eslint-disable-next-line prefer-destructuring
-		blocksArr = blocks[0];
+		blocksArr = blocks;
 	}
 
 	const randomNumber = num => Math.floor(Math.random() * num);
@@ -105,6 +105,10 @@ const Game = ({
 			return obj;
 		}, []);
 
+	function delay(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	const runAlgotithms = async () => {
 		startAlgorithmsRun();
 		const selectedAlgoritms = Object.entries(algorithms).filter(arr => arr[1]).map(arr => arr[0]);
@@ -116,6 +120,7 @@ const Game = ({
 			await animateShortestPath(fastestAlgorithm[2].reverse());
 		} else {
 			handleNoResult();
+			startAlgorithmsRun();
 			return;
 		}
 
@@ -133,6 +138,7 @@ const Game = ({
 			});
 		});
 		startAlgorithmsRun();
+		await delay(1000);
 	};
 
 	const randomBlocks = (board) => {
@@ -156,15 +162,12 @@ const Game = ({
 	const handleNextLevel = () => {
 		setShortestPath([]);
 		if (level < maxLevel) {
-			nextLevelHandler();
 			let blocksArray = [];
 
-			if (level > 0) {
-				for (let i = 0; i < level; i += 1) {
-					blocksArray = handleBlocks(blocksArray);
-				}
-				addBlocks(blocksArray);
+			for (let i = 0; i < level; i += 1) {
+				blocksArray = handleBlocks(blocksArray);
 			}
+			nextLevelHandler(blocksArray);
 		}
 	};
 
@@ -183,8 +186,8 @@ const Game = ({
 
 	const isNodeBlock = (node) => {
 		if (level > 1 && level <= maxLevel && blocks.length) {
-			for (let i = 0; i < blocks[0].length; i += 1) {
-				if (blocks[0][i][0] === node[0] && blocks[0][i][1] === node[1]) {
+			for (let i = 0; i < blocks.length; i += 1) {
+				if (blocks[i][0] === node[0] && blocks[i][1] === node[1]) {
 					return true;
 				}
 			}
@@ -229,7 +232,6 @@ Game.propTypes = {
 	makeGrid: propTypes.func.isRequired,
 	handleMaxLevel: propTypes.func.isRequired,
 	addResult: propTypes.func.isRequired,
-	addBlocks: propTypes.func.isRequired,
 	nextLevelHandler: propTypes.func.isRequired,
 	handleNoResult: propTypes.func.isRequired,
 	setAutomatic: propTypes.func.isRequired,
@@ -264,8 +266,7 @@ const mapDispatchToProps = dispatch => (
 	{
 		addResult: algorithmData => dispatch(actions.addResult(algorithmData)),
 		handleNoResult: () => dispatch(actions.handleNoResult()),
-		nextLevelHandler: () => dispatch(actions.nextLevelHandler()),
-		addBlocks: block => dispatch(actions.addBlocks(block)),
+		nextLevelHandler: blocks => dispatch(actions.nextLevelHandler(blocks)),
 		setAutomatic: () => dispatch(actions.setAutomatic()),
 		makeGrid: grid => dispatch(actions.makeGrid(grid)),
 		handleMaxLevel: (num1, num2) => dispatch(actions.handleMaxLevel(num1, num2)),

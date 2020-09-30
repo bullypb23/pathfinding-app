@@ -14,15 +14,9 @@ export const addResult = algorithmData => (
 	}
 );
 
-export const nextLevelHandler = () => (
+export const nextLevelHandler = blocks => (
 	{
 		type: actionTypes.NEXT_LEVEL_HANDLER,
-	}
-);
-
-export const addBlocks = blocks => (
-	{
-		type: actionTypes.ADD_BLOCKS,
 		blocks,
 	}
 );

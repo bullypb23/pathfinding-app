@@ -11,6 +11,7 @@ const initialState = {
 	gameFinished: false,
 	automatic: false,
 	startRun: false,
+	addedBlocks: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -40,17 +41,7 @@ const reducer = (state = initialState, action) => {
 		return {
 			...state,
 			level: state.level + 1,
-			// blocks: {
-			// 	...state.blocks,
-			// 	[state.level + 1]: [],
-			// },
-		};
-	case actionTypes.ADD_BLOCKS:
-		return {
-			...state,
-			blocks: [
-				action.blocks,
-			],
+			blocks: action.blocks,
 		};
 	case actionTypes.MAX_LEVEL_HANDLER:
 		return {
