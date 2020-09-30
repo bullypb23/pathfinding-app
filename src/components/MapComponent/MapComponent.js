@@ -2,7 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import propTypes from 'prop-types';
-import Node from './Node';
+import Node from '../Node/Node';
 import { MapContainer, Row } from './MapComponent.styles';
 
 const MapComponent = ({

@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, useLocation } from 'react-router-dom';
-import MapComponent from './MapComponent';
-import * as actions from '../store/actions/game';
-import astarAlgorithm from '../algorithms/astar';
-import bfsAlgorithm from '../algorithms/bfs';
-import dijkstraAlgorithm from '../algorithms/dijkstra';
+import MapComponent from '../MapComponent/MapComponent';
+import * as actions from '../../store/actions/game';
+import astarAlgorithm from '../../algorithms/astar';
+import bfsAlgorithm from '../../algorithms/bfs';
+import dijkstraAlgorithm from '../../algorithms/dijkstra';
 import {
 	Wrapper, Container, Heading, ErrorParagraph, Button, ButtonContainer,
 } from './Game.styles';
@@ -105,9 +105,7 @@ const Game = ({
 			return obj;
 		}, []);
 
-	function delay(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
+	const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 	const runAlgotithms = async () => {
 		startAlgorithmsRun();
@@ -213,8 +211,8 @@ const Game = ({
 			/>
 			{gameFinished ? <ErrorParagraph>There is no path available, end of game!</ErrorParagraph> : null}
 			<ButtonContainer>
-				<Button onClick={runAlgotithms} disabled={disabled || gameFinished}>Play</Button>
-				<Button onClick={handleNextLevel} disabled={gameFinished || startRun}>Next Level</Button>
+				<Button onClick={runAlgotithms} disabled={disabled || gameFinished || automatic}>Play</Button>
+				<Button onClick={handleNextLevel} disabled={gameFinished || startRun || automatic}>Next Level</Button>
 				<Button onClick={handleAutomatic} disabled={gameFinished || disabled}>Automatic Play</Button>
 			</ButtonContainer>
 		</Wrapper>

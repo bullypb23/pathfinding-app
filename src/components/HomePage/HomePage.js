@@ -7,10 +7,10 @@ import {
 	Wrapper, InformationDiv, Heading, LinkContainer, StyledButton, Container, Paragraph,
 	SizeButton, SizeButtonRight, SizeContainer, Size, ErrorParagraph, Span,
 } from './HomePage.styles';
-import Algorithms from './Algorithms';
-import * as gameConfigActions from '../store/actions/gameConfig';
-import * as gameActions from '../store/actions/game';
-import algorithmName from '../shared/common';
+import Algorithms from '../Algorithms/Algorithms';
+import * as gameConfigActions from '../../store/actions/gameConfig';
+import * as gameActions from '../../store/actions/game';
+import algorithmName from '../../shared/common';
 
 const HomePage = ({
 	history, start, end, gridSize, setGrid,

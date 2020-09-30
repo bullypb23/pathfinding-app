@@ -4,7 +4,7 @@ import propTypes from 'prop-types';
 import {
 	Wrapper, LevelNumber, Heading, AlgorithmContainer, Algorithm, SmallHeading, Paragraph, Button,
 } from './Level.styles';
-import algorithmName from '../shared/common';
+import algorithmName from '../../shared/common';
 
 const Level = ({ algorithms, number, handleAlgorithmReplay }) => (
 	<Wrapper>

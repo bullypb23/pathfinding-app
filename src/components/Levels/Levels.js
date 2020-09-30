@@ -1,8 +1,9 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
-import * as actions from '../store/actions/game';
-import Level from './Level';
+import * as actions from '../../store/actions/game';
+import Level from '../Level/Level';
 import {
 	Wrapper, Heading, Container, Paragraph,
 } from './Levels.styles';
@@ -10,7 +11,6 @@ import {
 const Levels = ({ levels, handleAlgorithmReplay, history }) => {
 	const handleReplay = (name, info, levelNum) => {
 		handleAlgorithmReplay(name, info, levelNum);
-		// eslint-disable-next-line react/prop-types
 		history.push('/replay');
 	};
 
@@ -33,10 +33,8 @@ const Levels = ({ levels, handleAlgorithmReplay, history }) => {
 };
 
 Levels.propTypes = {
-	// eslint-disable-next-line react/forbid-prop-types
 	levels: propTypes.object.isRequired,
 	handleAlgorithmReplay: propTypes.func.isRequired,
-	// eslint-disable-next-line react/forbid-prop-types
 	history: propTypes.object.isRequired,
 };
 

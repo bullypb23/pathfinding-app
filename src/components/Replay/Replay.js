@@ -1,13 +1,12 @@
-/* eslint-disable no-loop-func */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
-import MapComponent from './MapComponent';
+import MapComponent from '../MapComponent/MapComponent';
 import { Wrapper, SmallHeading, Button } from './Replay.styles';
-import algorithmName from '../shared/common';
+import algorithmName from '../../shared/common';
 
 const Replay = ({
 	grid, replay, start, end,

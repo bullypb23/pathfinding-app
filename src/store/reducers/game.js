@@ -11,7 +11,6 @@ const initialState = {
 	gameFinished: false,
 	automatic: false,
 	startRun: false,
-	addedBlocks: false,
 };
 
 const reducer = (state = initialState, action) => {

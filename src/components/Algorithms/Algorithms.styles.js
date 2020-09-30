@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Section = styled.div`
 	width: 100%;
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
 	align-items: flex-start;
 
 	@media (max-width: 576px) {
@@ -12,14 +12,16 @@ export const Section = styled.div`
 `;
 
 export const AlgorithmsContainer = styled.div`
-	width: 100%;
+	flex-basis: 20%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 10px;
+	margin: 0 10px;
 
-	@media (max-width: 576px) {
+	@media (max-width: 768px) {
     padding: 0;
+		flex-basis: 100%;
   }
 `;
 

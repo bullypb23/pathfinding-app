@@ -5,7 +5,7 @@ These instructions will get you a copy of the project up and running on your loc
 What things you need to install the software.
 
 - Git
-- Node
+- Node version v12.13.1
 
 ## Install
 Clone the git repository on your computer

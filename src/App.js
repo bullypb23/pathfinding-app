@@ -2,11 +2,11 @@ import React from 'react';
 import {
 	Switch, Route, Redirect, withRouter,
 } from 'react-router-dom';
-import Game from './components/Game';
-import Header from './components/Header';
-import HomePage from './components/HomePage';
-import Levels from './components/Levels';
-import Replay from './components/Replay';
+import Game from './components/Game/Game';
+import Header from './components/Header/Header';
+import HomePage from './components/HomePage/HomePage';
+import Levels from './components/Levels/Levels';
+import Replay from './components/Replay/Replay';
 import Global from './Global';
 import { Wrapper, Container } from './App.styles';
 

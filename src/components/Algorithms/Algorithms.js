@@ -4,8 +4,8 @@ import propTypes from 'prop-types';
 import {
 	Section, AlgorithmsContainer, Checkbox, Label,
 } from './Algorithms.styles';
-import * as actions from '../store/actions/gameConfig';
-import algorithmName from '../shared/common';
+import * as actions from '../../store/actions/gameConfig';
+import algorithmName from '../../shared/common';
 
 const Algorithms = ({
 	algorithms, toggleAlgorithm,
