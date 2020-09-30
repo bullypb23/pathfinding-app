@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/forbid-prop-types */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, useLocation } from 'react-router-dom';
@@ -17,6 +18,7 @@ const Game = ({
 	addResult, level, nextLevelHandler, levels, addBlocks, blocks, maxLevel,
 	handleNoResult, gameFinished, setAutomatic, automatic, gameStarted,
 }) => {
+	const [shortestPath, setShortestPath] = useState([]);
 	useEffect(() => {
 		if (automatic && gameStarted && !gameFinished) {
 			// eslint-disable-next-line no-use-before-define
@@ -32,8 +34,13 @@ const Game = ({
 	const query = useQuery();
 
 	useEffect(() => {
+		if (!gameStarted) {
+			return;
+		}
+
 		const cols = query.get('cols');
 		const rows = query.get('rows');
+
 		const newGrid = new Array(rows);
 		for (let i = 0; i < rows; i += 1) {
 			newGrid[i] = new Array(cols);
@@ -58,42 +65,112 @@ const Game = ({
 
 	const randomNumber = num => Math.floor(Math.random() * num);
 
-	const runAlgotithms = () => {
-		if (algorithms.astar) {
-			const [success, path, visitedNodes, time] = astarAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
-			if (success) {
-				addResult({
-					name: 'astar', path, visitedNodes, time,
-				});
-			} else {
-				handleNoResult();
-				return;
-			}
-		}
-
-		if (algorithms.bfs) {
-			const [success, path, visitedNodes, time] = bfsAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
-			if (success) {
-				addResult({
-					name: 'bfs', path, visitedNodes, time,
-				});
-			} else {
-				handleNoResult();
-				return;
-			}
-		}
-
-		if (algorithms.dijkstra) {
-			const [success, path, visitedNodes, time] = dijkstraAlgorithm(gridSize.rows, gridSize.cols, start.x, start.y, end.x, end.y, blocksArr);
-			if (success) {
-				addResult({
-					name: 'dijkstra', path, visitedNodes, time,
-				});
-			} else {
-				handleNoResult();
-			}
+	const animateShortestPath = (nodesInShortestPathOrder) => {
+		for (let i = 0; i < nodesInShortestPathOrder.length; i += 1) {
+			setTimeout(() => {
+				const node = nodesInShortestPathOrder[i];
+				setShortestPath(oldArray => [...oldArray, node]);
+			}, i * 50);
 		}
 	};
+
+	const isInShortestPath = (node) => {
+		if (shortestPath.length !== 0) {
+			for (let i = 0; i < shortestPath.length; i += 1) {
+				if (shortestPath[i].j === node[0] && shortestPath[i].i === node[1]) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
+	const algorithmsObj = {
+		astar: astarAlgorithm,
+		bfs: bfsAlgorithm,
+		dijkstra: dijkstraAlgorithm,
+	};
+
+	const getAlgorithmFunctions = allowed => Object.keys(algorithmsObj)
+		.filter(key => allowed.includes(key))
+		.reduce((obj, key) => {
+			obj[key] = algorithmsObj[key];
+			return obj;
+		}, []);
+
+	async function runAlgotithms() {
+		const selectedAlgoritms = Object.entries(algorithms).filter(arr => arr[1]).map(arr => arr[0]);
+		const algorithmsToRun = getAlgorithmFunctions(selectedAlgoritms);
+
+		// eslint-disable-next-line no-console
+		const fastestAlgorithm = await Promise.race(Object.keys(algorithmsToRun)
+			.map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
+			// .then(value => animateShortestPath(value[2].reverse()));
+
+		if (fastestAlgorithm[1] === true) {
+			animateShortestPath(fastestAlgorithm[2].reverse());
+		} else {
+			handleNoResult();
+			return;
+		}
+
+		const responses = await Promise.all(Object.keys(algorithmsToRun)
+			.map(key => algorithmsToRun[key](gridSize, start, end, blocksArr)));
+
+		// eslint-disable-next-line array-callback-return
+		responses.map((response) => {
+			const [name, success, path, visitedNodes, time] = response;
+			console.log(response);
+			if (success) {
+				addResult({
+					name,
+					path,
+					visitedNodes,
+					time,
+				});
+			}
+		});
+		// .then((result) => {
+		// 	// eslint-disable-next-line array-callback-return
+		// 	result.map((res) => {
+		// 		const [name, success, path, visitedNodes, time] = res;
+		// 		if (success) {
+		// 			addResult({
+		// 				name,
+		// 				path,
+		// 				visitedNodes,
+		// 				time,
+		// 			});
+		// 		} else {
+		// 			handleNoResult();
+		// 			// eslint-disable-next-line no-useless-return
+		// 			return;
+		// 		}
+		// 	});
+		// });
+		// Object.keys(algorithmsToRun).forEach((key) => {
+		// 	const algorithm = algorithmsToRun[key];
+		// 	const [success, path, visitedNodes, time] = algorithm(
+		// 		gridSize.rows,
+		// 		gridSize.cols,
+		// 		start.x,
+		// 		start.y,
+		// 		end.x,
+		// 		end.y,
+		// 		blocksArr
+		// 	);
+		// 	if (success) {
+		// 		addResult({
+		// 			name: key,
+		// 			path,
+		// 			visitedNodes,
+		// 			time,
+		// 		});
+		// 	} else {
+		// 		handleNoResult();
+		// 	}
+		// });
+	}
 
 	const randomBlocks = (board) => {
 		const x = randomNumber(gridSize.rows);
@@ -114,6 +191,7 @@ const Game = ({
 	};
 
 	const handleNextLevel = () => {
+		setShortestPath([]);
 		if (level < maxLevel) {
 			nextLevelHandler();
 			let blocksArray = [];
@@ -165,6 +243,7 @@ const Game = ({
 				start={start}
 				end={end}
 				isNodeBlock={isNodeBlock}
+				isInShortestPath={isInShortestPath}
 			/>
 			{gameFinished ? <ErrorParagraph>There is no path available, end of game!</ErrorParagraph> : null}
 			<ButtonContainer>
@@ -218,9 +297,9 @@ const mapStateToProps = state => (
 const mapDispatchToProps = dispatch => (
 	{
 		addResult: algorithmData => dispatch(actions.addResult(algorithmData)),
+		handleNoResult: () => dispatch(actions.handleNoResult()),
 		nextLevelHandler: () => dispatch(actions.nextLevelHandler()),
 		addBlocks: block => dispatch(actions.addBlocks(block)),
-		handleNoResult: () => dispatch(actions.handleNoResult()),
 		setAutomatic: () => dispatch(actions.setAutomatic()),
 		makeGrid: grid => dispatch(actions.makeGrid(grid)),
 		handleMaxLevel: (num1, num2) => dispatch(actions.handleMaxLevel(num1, num2)),

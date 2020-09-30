@@ -59,79 +59,80 @@ const setup = (rows, cols, blocks) => {
 	}
 };
 
-export default function astarAlgorithm(rows, cols, startX, startY, endX, endY, blocks) {
-	let startTime = Date.now();
-	let endTime;
-	let time;
-	let start;
-	let end;
-	let openSet = [];
-	const closedSet = [];
-	const path = [];
+export default function astarAlgorithm(gridSize, startCoords, endCoords, blocks) {
+	return new Promise((resolve) => {
+		let startTime = Date.now();
+		let endTime;
+		let time;
+		let start;
+		let end;
+		let openSet = [];
+		const closedSet = [];
+		const path = [];
 
-	setup(rows, cols, blocks);
+		setup(gridSize.rows, gridSize.cols, blocks);
 
-	start = grid[startX][startY];
-	end = grid[endX][endY];
+		start = grid[startCoords.x][startCoords.y];
+		end = grid[endCoords.x][endCoords.y];
 
-	openSet.push(start);
+		openSet.push(start);
 
-	while (openSet.length > 0) {
-		let lowestIndex = 0;
-		for (let i = 0; i < openSet.length; i += 1) {
-			if (openSet[i].f < openSet[lowestIndex].f) {
-				lowestIndex = i;
-			}
-		}
-
-		const current = openSet[lowestIndex];
-
-		if (current === end) {
-			endTime = Date.now();
-			time = Math.abs((endTime - startTime) / 1000);
-			let temp = current;
-			path.push(temp);
-			while (temp.previous) {
-				path.push(temp.previous);
-				temp = temp.previous;
+		while (openSet.length > 0) {
+			let lowestIndex = 0;
+			for (let i = 0; i < openSet.length; i += 1) {
+				if (openSet[i].f < openSet[lowestIndex].f) {
+					lowestIndex = i;
+				}
 			}
 
-			return [true, path, closedSet, time];
-		}
+			const current = openSet[lowestIndex];
 
-		openSet = openSet.filter(el => current !== el);
-		closedSet.push(current);
+			if (current === end) {
+				endTime = Date.now();
+				time = Math.abs((endTime - startTime) / 1000);
+				let temp = current;
+				path.push(temp);
+				while (temp.previous) {
+					path.push(temp.previous);
+					temp = temp.previous;
+				}
 
-		const { neighbors } = current;
+				return resolve(['astar', true, path, closedSet, time]);
+			}
 
-		for (let i = 0; i < neighbors.length; i += 1) {
-			const neighbor = neighbors[i];
+			openSet = openSet.filter(el => current !== el);
+			closedSet.push(current);
 
-			if (!closedSet.includes(neighbor) && !neighbor.block) {
-				const tempG = current.g + 1;
+			const { neighbors } = current;
 
-				let newPath = false;
-				if (openSet.includes(neighbor)) {
-					if (tempG < neighbor.g) {
+			for (let i = 0; i < neighbors.length; i += 1) {
+				const neighbor = neighbors[i];
+
+				if (!closedSet.includes(neighbor) && !neighbor.block) {
+					const tempG = current.g + 1;
+
+					let newPath = false;
+					if (openSet.includes(neighbor)) {
+						if (tempG < neighbor.g) {
+							neighbor.g = tempG;
+							newPath = true;
+						}
+					} else {
 						neighbor.g = tempG;
 						newPath = true;
+						openSet.push(neighbor);
 					}
-				} else {
-					neighbor.g = tempG;
-					newPath = true;
-					openSet.push(neighbor);
-				}
 
-				if (newPath) {
-					neighbor.h = heuristic(neighbor, end);
-					neighbor.f = neighbor.g + neighbor.h;
-					neighbor.previous = current;
+					if (newPath) {
+						neighbor.h = heuristic(neighbor, end);
+						neighbor.f = neighbor.g + neighbor.h;
+						neighbor.previous = current;
+					}
 				}
 			}
 		}
-	}
-
-	endTime = Date.now();
-	time = (endTime - startTime) / 1000;
-	return [false, path, closedSet, time];
+		endTime = Date.now();
+		time = (endTime - startTime) / 1000;
+		return resolve(['astar', false, path, closedSet, time]);
+	});
 }

@@ -67,58 +67,60 @@ const setup = (rows, cols, blocks) => {
 	}
 };
 
-export default function dijkstraAlgorithm(rows, cols, startX, startY, endX, endY, blocks) {
-	const startTime = Date.now();
-	let endTime;
-	let time;
-	let start;
-	let end;
-	let unvisitedNodes = [];
-	const visitedNodes = [];
-	const path = [];
+export default function dijkstraAlgorithm(gridSize, startCoords, endCoords, blocks) {
+	return new Promise((resolve) => {
+		const startTime = Date.now();
+		let endTime;
+		let time;
+		let start;
+		let end;
+		let unvisitedNodes = [];
+		const visitedNodes = [];
+		const path = [];
 
-	setup(rows, cols, blocks);
+		setup(gridSize.rows, gridSize.cols, blocks);
 
-	start = grid[startX][startY];
-	end = grid[endX][endY];
+		start = grid[startCoords.x][startCoords.y];
+		end = grid[endCoords.x][endCoords.y];
 
-	start.distance = 0;
+		start.distance = 0;
 
-	unvisitedNodes = getAllNodes(grid, cols, rows);
+		unvisitedNodes = getAllNodes(grid, gridSize.cols, gridSize.rows);
 
-	while (unvisitedNodes.length > 0) {
-		unvisitedNodes = sortNodesByDistance(unvisitedNodes);
-		let closestNode = unvisitedNodes.shift();
+		while (unvisitedNodes.length > 0) {
+			unvisitedNodes = sortNodesByDistance(unvisitedNodes);
+			let closestNode = unvisitedNodes.shift();
 
-		if (closestNode.distance === Infinity) {
-			return [false, path, visitedNodes, time];
-		}
-		closestNode.visited = true;
-		visitedNodes.push(closestNode);
+			if (closestNode.distance === Infinity) {
+				return ['dijkstra', false, path, visitedNodes, time];
+			}
+			closestNode.visited = true;
+			visitedNodes.push(closestNode);
 
-		if (closestNode === end) {
-			endTime = Date.now();
-			time = Math.abs((endTime - startTime) / 1000);
-			let temp = closestNode;
-			path.push(temp);
-			while (temp.previousNode) {
-				path.push(temp.previousNode);
-				temp = temp.previousNode;
+			if (closestNode === end) {
+				endTime = Date.now();
+				time = Math.abs((endTime - startTime) / 1000);
+				let temp = closestNode;
+				path.push(temp);
+				while (temp.previousNode) {
+					path.push(temp.previousNode);
+					temp = temp.previousNode;
+				}
+
+				return resolve(['dijkstra', true, path, visitedNodes, time]);
 			}
 
-			return [true, path, visitedNodes, time];
-		}
+			let { neighbors } = closestNode;
 
-		let { neighbors } = closestNode;
-
-		for (let i = 0; i < neighbors.length; i += 1) {
-			if (neighbors[i].visited === false && !neighbors[i].block) {
-				neighbors[i].visited = true;
-				neighbors[i].distance = closestNode.distance + 1;
-				neighbors[i].previousNode = closestNode;
+			for (let i = 0; i < neighbors.length; i += 1) {
+				if (neighbors[i].visited === false && !neighbors[i].block) {
+					neighbors[i].visited = true;
+					neighbors[i].distance = closestNode.distance + 1;
+					neighbors[i].previousNode = closestNode;
+				}
 			}
 		}
-	}
 
-	return [false, path, visitedNodes, time];
+		return resolve(['dijkstra', false, path, visitedNodes, time]);
+	});
 }

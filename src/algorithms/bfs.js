@@ -52,52 +52,54 @@ const setup = (cols, rows, blocks) => {
 	}
 };
 
-export default function bfs(rows, cols, startX, startY, endX, endY, blocks) {
-	let startTime = Date.now();
-	let endTime;
-	let time;
-	let start;
-	let end;
-	const queue = [];
-	const visitedNodes = [];
-	const path = [];
+export default function bfs(gridSize, startCoords, endCoords, blocks) {
+	return new Promise((resolve) => {
+		let startTime = Date.now();
+		let endTime;
+		let time;
+		let start;
+		let end;
+		const queue = [];
+		const visitedNodes = [];
+		const path = [];
 
-	setup(cols, rows, blocks);
+		setup(gridSize.cols, gridSize.rows, blocks);
 
-	start = grid[startX][startY];
-	end = grid[endX][endY];
+		start = grid[startCoords.x][startCoords.y];
+		end = grid[endCoords.x][endCoords.y];
 
-	queue.push(start);
+		queue.push(start);
 
-	while (queue.length > 0) {
-		const current = queue.shift();
-		current.visited = true;
-		visitedNodes.push(current);
+		while (queue.length > 0) {
+			const current = queue.shift();
+			current.visited = true;
+			visitedNodes.push(current);
 
-		if (current === end) {
-			endTime = Date.now();
-			time = Math.abs((endTime - startTime) / 1000);
-			let temp = current;
-			path.push(temp);
-			while (temp.parent) {
-				path.push(temp.parent);
-				temp = temp.parent;
+			if (current === end) {
+				endTime = Date.now();
+				time = Math.abs((endTime - startTime) / 1000);
+				let temp = current;
+				path.push(temp);
+				while (temp.parent) {
+					path.push(temp.parent);
+					temp = temp.parent;
+				}
+
+				return resolve(['bfs', true, path, visitedNodes, time]);
 			}
 
-			return [true, path, visitedNodes, time];
-		}
+			const { edges } = current;
 
-		const { edges } = current;
-
-		for (let i = 0; i < edges.length; i += 1) {
-			if (edges[i].visited === false && !edges[i].block) {
-				edges[i].visited = true;
-				edges[i].parent = current;
-				queue.push(edges[i]);
+			for (let i = 0; i < edges.length; i += 1) {
+				if (edges[i].visited === false && !edges[i].block) {
+					edges[i].visited = true;
+					edges[i].parent = current;
+					queue.push(edges[i]);
+				}
 			}
 		}
-	}
-	endTime = Date.now();
-	time = (endTime - startTime) / 1000;
-	return [false, path, visitedNodes, time];
+		endTime = Date.now();
+		time = (endTime - startTime) / 1000;
+		return resolve(['bfs', false, path, visitedNodes, time]);
+	});
 }
