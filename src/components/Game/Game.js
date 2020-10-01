@@ -213,7 +213,7 @@ const Game = ({
 			<ButtonContainer>
 				<Button onClick={runAlgotithms} disabled={disabled || gameFinished || automatic}>Play</Button>
 				<Button onClick={handleNextLevel} disabled={gameFinished || startRun || automatic}>Next Level</Button>
-				<Button onClick={handleAutomatic} disabled={gameFinished || disabled}>Automatic Play</Button>
+				<Button onClick={handleAutomatic} disabled={gameFinished || disabled || (startRun && !automatic)}>Automatic Play</Button>
 			</ButtonContainer>
 		</Wrapper>
 	);

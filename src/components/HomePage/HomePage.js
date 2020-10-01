@@ -27,7 +27,7 @@ const HomePage = ({
 		} else {
 			setError(false);
 		}
-	}, [algorithms]);
+	}, [algorithms.astar, algorithms.bfs, algorithms.dijkstra]);
 
 	useEffect(() => {
 		if (gridSize.cols === 0) {
@@ -67,7 +67,7 @@ const HomePage = ({
 		} else {
 			setEqual(false);
 		}
-	}, [gridSize, end, start]);
+	}, [gridSize.cols, gridSize.rows, end.x, end.y, start.x, start.y]);
 
 	const goToGamePage = () => {
 		startGame();
